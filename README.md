@@ -1,6 +1,6 @@
 # hang-in-there
 
-- Link to our team's [Trello board](https://trello.com/b/Fq0lOEDC/defiant-scarves-team-4){:target="_blank"}
+- Link to our team's [Trello board](https://trello.com/b/Fq0lOEDC/defiant-scarves-team-4)
 
 ## Folder Structure
 
