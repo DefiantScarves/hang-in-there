@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerInput : MonoBehaviour
 {
+    //delete this line
     public float Speed = 10f;
 
     private Rigidbody rb;
