@@ -32,6 +32,7 @@ public class PlayerInput : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         col = GetComponent<CapsuleCollider>();
+        GetComponent<LineRenderer>().enabled = false; // Hide "Scarf"
         currentSpeed = Speed;
         isAiming = false;
         standardMoveable = new Color(0f, 0f, 0f);
@@ -137,6 +138,7 @@ public class PlayerInput : MonoBehaviour
     private void Magnesis()
     {
         inMagnesis = true;
+        GetComponent<LineRenderer>().enabled = true; // Show "Scarf"
         if (heldObject == null)
         {
             heldObject = inCrosshairs;
@@ -145,21 +147,22 @@ public class PlayerInput : MonoBehaviour
         Ray fromCamera = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
         float distanceFromCamera = Vector3.Distance(Camera.main.transform.position, Camera.main.transform.position + heldObjectOffset);
         float distanceFromPlayer = Vector3.Distance(transform.position, Camera.main.transform.position + heldObjectOffset);
-        heldObject.GetComponent<Rigidbody>().MovePosition(Vector3.Lerp(heldObject.transform.position, fromCamera.GetPoint(distanceFromCamera), 0.3f));
-        //heldObject.transform.position = Vector3.Lerp(heldObject.transform.position, fromCamera.GetPoint(distanceFromCamera), 0.3f);
+        heldObject.transform.position = Vector3.Lerp(heldObject.transform.position, fromCamera.GetPoint(distanceFromCamera), 0.3f);
 
         if (Input.GetKey(KeyCode.Q) && distanceFromPlayer > 5f)
         {
-            //heldObject.transform.position = Vector3.Lerp(heldObject.transform.position, transform.position, 0.025f);
-            heldObject.GetComponent<Rigidbody>().MovePosition(Vector3.Lerp(heldObject.transform.position, transform.position, 0.025f));
+            heldObject.transform.position = Vector3.Lerp(heldObject.transform.position, transform.position, 0.025f);
             heldObjectOffset = (transform.position - Camera.main.transform.position) + (heldObject.transform.position - transform.position);
         }
         if (Input.GetKey(KeyCode.E) && distanceFromPlayer < 25f)
         {
-            //heldObject.transform.position = Vector3.Lerp(heldObject.transform.position, fromCamera.GetPoint(25f), 0.025f);
-            heldObject.GetComponent<Rigidbody>().MovePosition(Vector3.Lerp(heldObject.transform.position, fromCamera.GetPoint(25f), 0.025f));
+            heldObject.transform.position = Vector3.Lerp(heldObject.transform.position, fromCamera.GetPoint(25f), 0.025f);
             heldObjectOffset = (transform.position - Camera.main.transform.position) + (heldObject.transform.position - transform.position);
         }
+
+        // Draw "Scarf" line
+        GetComponent<LineRenderer>().SetPosition(0, transform.position);
+        GetComponent<LineRenderer>().SetPosition(1, heldObject.transform.position);
 
         if (Input.GetMouseButtonUp(0))
         {
@@ -173,5 +176,6 @@ public class PlayerInput : MonoBehaviour
         inMagnesis = false;
         heldObject = null;
         inCrosshairs = null;
+        GetComponent<LineRenderer>().enabled = false;
     }
 }
