@@ -47,6 +47,8 @@ public class PlayerInput : MonoBehaviour
         selectedMoveable = new Color(1f, .89f, .255f);
         moveableObjects = GameObject.FindGameObjectsWithTag("Moveable");
         Crosshairs.enabled = false;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Confined;
     }
 
     // Update is called once per frame
