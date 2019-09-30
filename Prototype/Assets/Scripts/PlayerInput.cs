@@ -8,12 +8,14 @@ public class PlayerInput : MonoBehaviour
     public float Speed = 0.25f;
     public float jumpForce = 7;
     public float ScarfLength = 100f;
+    public float GrappleSpeed = 0.1f;
 
     public LayerMask groundLayers;
     public CapsuleCollider col;
     public Image Crosshairs;
 
     private Rigidbody rb;
+    private float rbOriginalMass;
 
     private float currentSpeed;
     private Vector3 heldObjectOffset;
@@ -27,10 +29,15 @@ public class PlayerInput : MonoBehaviour
     private GameObject heldObject;
     private GameObject[] moveableObjects;
 
+    private Vector3 grappleLocation;
+    private bool doGrapple = false;
+
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        rbOriginalMass = rb.mass;
         col = GetComponent<CapsuleCollider>();
         GetComponent<LineRenderer>().enabled = false; // Hide "Scarf"
         currentSpeed = Speed;
@@ -60,7 +67,27 @@ public class PlayerInput : MonoBehaviour
         {
             if (!inMagnesis) { aim();}
             if (readyToGrab && Input.GetMouseButton(0)) { Magnesis(); }
+            else if(!readyToGrab && Input.GetMouseButtonDown(0))
+            {
+                Grapple();
+            }
+
+            if(doGrapple)
+            {
+                GrappleMovePlayer();
+            }
+
+            if(Input.GetMouseButtonUp(0))
+            {
+                StopGrapple();
+            }
         }
+
+        else
+        {
+            StopGrapple();
+        }
+
         if (Input.GetMouseButtonUp(0)) { StopMagnesis(); }
 
         // Zooms camera in to player
@@ -163,7 +190,6 @@ public class PlayerInput : MonoBehaviour
         // Draw "Scarf" line
         GetComponent<LineRenderer>().SetPosition(0, transform.position);
         GetComponent<LineRenderer>().SetPosition(1, heldObject.transform.position);
-
         if (Input.GetMouseButtonUp(0))
         {
             StopMagnesis();
@@ -177,5 +203,51 @@ public class PlayerInput : MonoBehaviour
         heldObject = null;
         inCrosshairs = null;
         GetComponent<LineRenderer>().enabled = false;
+    }
+
+    // Grapple
+    private void Grapple()
+    {
+        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+        RaycastHit hit;
+        
+
+        if (Physics.Raycast(ray, out hit, ScarfLength))
+        {
+            if(hit.collider.CompareTag("Untagged"))
+            {
+                grappleLocation = hit.point;
+                doGrapple = true;
+            }
+        }
+    }
+
+    // Stop Grappling
+    private void StopGrapple()
+    {
+        doGrapple = false;
+        GetComponent<LineRenderer>().enabled = false;
+        rb.mass = rbOriginalMass;
+        rb.useGravity = true;
+    }
+
+    // Moves the player towards grappled location.
+    private void GrappleMovePlayer()
+    {
+        GetComponent<LineRenderer>().enabled = true; // Show "Scarf"
+        // Draw "Scarf" line
+        GetComponent<LineRenderer>().SetPosition(0, transform.position);
+        GetComponent<LineRenderer>().SetPosition(1, grappleLocation);
+
+        rb.mass = 0.1f;
+        rb.useGravity = false;
+
+        transform.position = Vector3.Lerp(transform.position, grappleLocation, GrappleSpeed * Time.deltaTime);
+
+        float dist = Vector3.Distance(transform.position, grappleLocation);
+        if(dist <= 1.5f)
+        {
+            StopGrapple();
+        }
     }
 }
