@@ -262,7 +262,7 @@ public class PlayerInput : MonoBehaviour
         GetComponent<LineRenderer>().enabled = false;
         rb.mass = rbOriginalMass;
         rb.useGravity = true;
-        rb.freezeRotation = false;
+        //rb.freezeRotation = false;
     }
 
     // Moves the player towards grappled location.
