@@ -54,10 +54,14 @@ public class PlayerInput : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Get movement from WASD
         Vector3 movementVector = Vector3.zero;
-        movementVector.x = Input.GetAxis("Horizontal");
-        movementVector.z = Input.GetAxis("Vertical");
+        // Get movement from WASD
+        if (!doGrapple)
+        {
+            movementVector.x = Input.GetAxis("Horizontal");
+            movementVector.z = Input.GetAxis("Vertical");
+        }
+
 
         // Sprint
         if (Input.GetKey(KeyCode.LeftShift)) { currentSpeed = Speed * 2; }
@@ -90,7 +94,14 @@ public class PlayerInput : MonoBehaviour
             StopGrapple();
         }
 
-        if (Input.GetMouseButtonUp(0)) { StopMagnesis(); }
+        if (Input.GetMouseButtonUp(0))
+        {
+            StopMagnesis();
+            if (heldObject != null)
+            {
+                heldObject.GetComponent<Rigidbody>().freezeRotation = false;
+            }
+        }
 
         // Zooms camera in to player
         if (Input.GetMouseButtonDown(1)) { Camera.main.SendMessage("StartSkill"); }
@@ -173,6 +184,9 @@ public class PlayerInput : MonoBehaviour
             heldObject = inCrosshairs;
             heldObjectOffset = (transform.position - Camera.main.transform.position) + (heldObject.transform.position - transform.position);
         }
+        heldObject.GetComponent<Rigidbody>().freezeRotation = true;
+        heldObject.GetComponent<Rigidbody>().useGravity = false;
+
         Ray fromCamera = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
         float distanceFromCamera = Vector3.Distance(Camera.main.transform.position, Camera.main.transform.position + heldObjectOffset);
         float distanceFromPlayer = Vector3.Distance(transform.position, Camera.main.transform.position + heldObjectOffset);
@@ -188,6 +202,18 @@ public class PlayerInput : MonoBehaviour
             heldObject.transform.position = Vector3.Lerp(heldObject.transform.position, fromCamera.GetPoint(25f), 0.025f);
             heldObjectOffset = (transform.position - Camera.main.transform.position) + (heldObject.transform.position - transform.position);
         }
+        if (Input.GetKey(KeyCode.Z))
+        {
+            heldObject.transform.Rotate(1f, 0f, 0f);
+        }
+        if (Input.GetKey(KeyCode.X))
+        {
+            heldObject.transform.Rotate(0f, 1f, 0f);
+        }
+        if (Input.GetKey(KeyCode.C))
+        {
+            heldObject.transform.Rotate(0f, 0f, 1f);
+        }
 
         // Draw "Scarf" line
         GetComponent<LineRenderer>().SetPosition(0, transform.position);
@@ -200,6 +226,11 @@ public class PlayerInput : MonoBehaviour
 
     private void StopMagnesis()
     {
+        if (heldObject != null)
+        {
+            heldObject.GetComponent<Rigidbody>().freezeRotation = false;
+            heldObject.GetComponent<Rigidbody>().useGravity = true;
+        }
         readyToGrab = false;
         inMagnesis = false;
         heldObject = null;
@@ -231,6 +262,7 @@ public class PlayerInput : MonoBehaviour
         GetComponent<LineRenderer>().enabled = false;
         rb.mass = rbOriginalMass;
         rb.useGravity = true;
+        rb.freezeRotation = false;
     }
 
     // Moves the player towards grappled location.
@@ -243,6 +275,7 @@ public class PlayerInput : MonoBehaviour
 
         rb.mass = 0.1f;
         rb.useGravity = false;
+        rb.freezeRotation = true;
 
         transform.position = Vector3.Lerp(transform.position, grappleLocation, GrappleSpeed * Time.deltaTime);
 
