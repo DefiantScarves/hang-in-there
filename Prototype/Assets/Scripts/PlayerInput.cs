@@ -32,6 +32,8 @@ public class PlayerInput : MonoBehaviour
     private Vector3 grappleLocation;
     private bool doGrapple = false;
 
+    private Vector3 movementVector;
+
 
     // Start is called before the first frame update
     void Start()
@@ -53,8 +55,10 @@ public class PlayerInput : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
-        Vector3 movementVector = Vector3.zero;
+    {   
+        movementVector = Vector3.zero;
+        
+
         // Get movement from WASD
         if (!doGrapple)
         {
@@ -71,31 +75,32 @@ public class PlayerInput : MonoBehaviour
         Crosshairs.enabled = isAiming = Input.GetMouseButton(1);
         if (isAiming)
         {
-            if (!inMagnesis) { aim();}
+            if (!inMagnesis) { aim(); }
             if (readyToGrab && Input.GetMouseButton(0)) { Magnesis(); }
-            else if(!readyToGrab && Input.GetMouseButtonDown(0))
+            else if (!readyToGrab && Input.GetMouseButtonDown(0))
             {
                 Grapple();
             }
 
-            if(doGrapple)
+            if (doGrapple)
             {
                 GrappleMovePlayer();
             }
-
-            if(Input.GetMouseButtonUp(0))
-            {
-                StopGrapple();
-            }
         }
 
-        else
+        if (!readyToGrab && Input.GetMouseButtonDown(0))
         {
-            StopGrapple();
+            Grapple();
+        }
+
+        if (doGrapple)
+        {
+            GrappleMovePlayer();
         }
 
         if (Input.GetMouseButtonUp(0))
         {
+            StopGrapple();
             StopMagnesis();
             if (heldObject != null)
             {
@@ -120,7 +125,7 @@ public class PlayerInput : MonoBehaviour
         rb.AddForce(movementVector * Speed);
 
         // Jump
-        if (IsGrounded() && Input.GetKeyDown(KeyCode.Space))
+        if (IsGrounded() && Input.GetKeyDown(KeyCode.Space) && !doGrapple)
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
@@ -141,7 +146,8 @@ public class PlayerInput : MonoBehaviour
         foreach (GameObject mgo in moveableObjects)
         {
             Ray toGo = new Ray(transform.position, mgo.transform.position - transform.position);
-            if (!inMagnesis && Physics.Raycast(toGo, out RaycastHit hitInfo)) {
+            if (!inMagnesis && Physics.Raycast(toGo, out RaycastHit hitInfo))
+            {
                 if (hitInfo.collider.gameObject.tag == "Moveable")
                 {
                     mgo.GetComponent<Renderer>().material.SetColor("_Color", highlightedMoveable);
@@ -241,13 +247,13 @@ public class PlayerInput : MonoBehaviour
     // Grapple
     private void Grapple()
     {
-        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+        Ray ray = new Ray(rb.transform.position, Camera.main.transform.forward);
         RaycastHit hit;
-        
+
 
         if (Physics.Raycast(ray, out hit, ScarfLength))
         {
-            if(hit.collider.CompareTag("Untagged"))
+            if (hit.collider.CompareTag("Untagged"))
             {
                 grappleLocation = hit.point;
                 doGrapple = true;
@@ -277,12 +283,10 @@ public class PlayerInput : MonoBehaviour
         rb.useGravity = false;
         rb.freezeRotation = true;
 
-        transform.position = Vector3.Lerp(transform.position, grappleLocation, GrappleSpeed * Time.deltaTime);
 
-        float dist = Vector3.Distance(transform.position, grappleLocation);
-        if(dist <= 1.5f)
-        {
-            StopGrapple();
-        }
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+
+        transform.position = Vector3.Lerp(transform.position, grappleLocation, GrappleSpeed * Time.deltaTime);
     }
 }
