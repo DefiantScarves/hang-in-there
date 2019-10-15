@@ -9,10 +9,13 @@ public class PlayerInput : MonoBehaviour
     public float jumpForce = 7;
     public float ScarfLength = 100f;
     public float GrappleSpeed = 0.1f;
+    public float distanceGround;
+
 
     public LayerMask groundLayers;
     public CapsuleCollider col;
     public Image Crosshairs;
+    public bool isGrounded = false;
 
     private Rigidbody rb;
     private float rbOriginalMass;
@@ -35,6 +38,8 @@ public class PlayerInput : MonoBehaviour
     private Vector3 movementVector;
 
 
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -51,6 +56,7 @@ public class PlayerInput : MonoBehaviour
         Crosshairs.enabled = false;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Confined;
+        distanceGround = GetComponent<CapsuleCollider>().bounds.extents.y;
     }
 
     // Update is called once per frame
@@ -124,18 +130,26 @@ public class PlayerInput : MonoBehaviour
         if (movementVector != Vector3.zero && !isAiming) { transform.forward = movementVector; }
         rb.AddForce(movementVector * Speed);
 
+
+
+        if (!Physics.Raycast (transform.position, -Vector3.up, distanceGround + 0.1f))
+        {
+            isGrounded = false;
+        }
+        else
+        {
+            isGrounded = true;
+        }
+
         // Jump
-        if (IsGrounded() && Input.GetKeyDown(KeyCode.Space) && !doGrapple)
+        if (isGrounded && Input.GetKeyDown(KeyCode.Space) && !doGrapple)
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
     }
 
-    private bool IsGrounded()
-    {
-        return Physics.CheckCapsule(col.bounds.center, new Vector3(col.bounds.center.x,
-            col.bounds.min.y, col.bounds.center.z), col.radius * .9f, groundLayers);
-    }
+
+
 
     private void aim()
     {
@@ -161,7 +175,7 @@ public class PlayerInput : MonoBehaviour
         }
 
         // Paint moveable object being aimed at
-        if (!inMagnesis && Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit aimHit, ScarfLength))
+        if (!inMagnesis && Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit aimHit, ScarfLength) && !doGrapple)
         {
             if (aimHit.collider.gameObject.tag == "Moveable")
             {
@@ -248,7 +262,18 @@ public class PlayerInput : MonoBehaviour
     // Grapple
     private void Grapple()
     {
-        Ray ray = new Ray(rb.transform.position, Camera.main.transform.forward);
+        Ray ray;
+
+        if(!isAiming)
+        {
+            ray = new Ray(rb.transform.position, Camera.main.transform.forward);
+        }
+        
+        else
+        {
+            ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+        }
+
         RaycastHit hit;
 
 
@@ -265,11 +290,18 @@ public class PlayerInput : MonoBehaviour
     // Stop Grappling
     private void StopGrapple()
     {
-        doGrapple = false;
+
+        //doGrapple = false;
         GetComponent<LineRenderer>().enabled = false;
         rb.mass = rbOriginalMass;
         rb.useGravity = true;
         //rb.freezeRotation = false;
+        if(doGrapple)
+        {
+            rb.AddForce(Vector3.up * (jumpForce * 1.2f), ForceMode.Impulse);
+        }
+        doGrapple = false;
+
     }
 
     // Moves the player towards grappled location.
