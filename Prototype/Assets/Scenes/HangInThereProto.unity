@@ -1195,6 +1195,11 @@ PrefabInstance:
       propertyPath: Crosshairs
       value: 
       objectReference: {fileID: 1403863153}
+    - target: {fileID: 3418097252959086713, guid: 92b65f7ff914183499d623de4af0a838,
+        type: 3}
+      propertyPath: ScarfLength
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 92b65f7ff914183499d623de4af0a838, type: 3}
 --- !u!1001 &5885142689497832490
