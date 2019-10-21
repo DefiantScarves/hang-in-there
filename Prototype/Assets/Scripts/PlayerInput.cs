@@ -16,6 +16,9 @@ public class PlayerInput : MonoBehaviour
     public CapsuleCollider col;
     public Image Crosshairs;
     public bool isGrounded = false;
+    public bool isAgainstWallDuringGrapple = false;
+    public bool jumpedGrappledAlready = false;
+    public bool haveGrappled = false;
 
     private Rigidbody rb;
     private float rbOriginalMass;
@@ -37,6 +40,7 @@ public class PlayerInput : MonoBehaviour
     private bool doGrapple = false;
 
     private Vector3 movementVector;
+    private Vector3 currentVelocity;
 
 
 
@@ -71,6 +75,13 @@ public class PlayerInput : MonoBehaviour
         {
             movementVector.x = Input.GetAxis("Horizontal");
             movementVector.z = Input.GetAxis("Vertical");
+        }
+
+
+        // Velocity for after un-grappling
+        if (!isGrounded && haveGrappled)
+        {
+            rb.AddForce(transform.forward * GrappleSpeed, ForceMode.Impulse);
         }
 
         // Sprint
@@ -137,6 +148,7 @@ public class PlayerInput : MonoBehaviour
         rb.AddForce(movementVector * Speed);
 
 
+        // Prevents player form jumping up a wall
         if (!Physics.Raycast (transform.position, -Vector3.up, distanceGround + 0.1f))
         {
             isGrounded = false;
@@ -144,12 +156,31 @@ public class PlayerInput : MonoBehaviour
         else
         {
             isGrounded = true;
+            jumpedGrappledAlready = false;
+            haveGrappled = false;
         }
 
         // Jump
         if (isGrounded && Input.GetKeyDown(KeyCode.Space) && !doGrapple)
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        }
+
+        // Asserts whether player is against a wall during grapple or not
+        if(doGrapple && Physics.Raycast(rb.transform.position, rb.transform.forward, 1.0f))
+        {
+            isAgainstWallDuringGrapple = true;
+        }
+        else
+        {
+            isAgainstWallDuringGrapple = false;
+        }
+
+        // Asserts whether player is against wall in general.
+        // Used for velocity after grappling.
+        if(Physics.Raycast(rb.transform.position, rb.transform.forward, 1.0f))
+        {
+            haveGrappled = false;
         }
     }
 
@@ -307,9 +338,10 @@ public class PlayerInput : MonoBehaviour
         rb.mass = rbOriginalMass;
         rb.useGravity = true;
         //rb.freezeRotation = false;
-        if(doGrapple)
+        if (doGrapple && isAgainstWallDuringGrapple && !jumpedGrappledAlready)
         {
             rb.AddForce(Vector3.up * (jumpForce * 1.2f), ForceMode.Impulse);
+            jumpedGrappledAlready = true;
         }
         doGrapple = false;
 
@@ -326,6 +358,7 @@ public class PlayerInput : MonoBehaviour
         rb.mass = 0.1f;
         rb.useGravity = false;
         rb.freezeRotation = true;
+        haveGrappled = true;
 
 
         rb.velocity = Vector3.zero;
