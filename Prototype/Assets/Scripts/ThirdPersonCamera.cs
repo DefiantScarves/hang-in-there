@@ -55,15 +55,12 @@ public class ThirdPersonCamera : MonoBehaviour
 
         // Clamp the Y rotation so it can't orbit all the way over or under the character
         currentY = Mathf.Clamp(currentY, Y_ANGLE_MIN, Y_ANGLE_MAX);
-    }
 
-    private void FixedUpdate()
-    {
         // direction is the direction and distance from the player to where the camera should be in orbit
         Vector3 direction = new Vector3(0, 0, -distanceFromPlayer);
         // rotation is how the camera should orbit (rotate) around the player based on mouse input
         Quaternion rotation = Quaternion.Euler(-currentY, currentX, 0);
-        
+
         // followingPosition is based on the direction and rotation calculated above
         followingPosition = Player.position + rotation * direction;
         // aimingPosition is based on the direction the camera is facing and the offset calculated in Start()
@@ -74,7 +71,7 @@ public class ThirdPersonCamera : MonoBehaviour
         if (!playerInSkill)
         {
             inAimingPosition = false; // Tell camera that it shouldn't be in aiming position anymore
-            
+
             // Tell the camera to stop zooming out in half a second. This is a remnant from when I was trying to
             // do camera zooming constantly with coroutines. Coroutines need a forced stop and start, so this was
             // the call to stop the coroutine. I commandeered the coroutine and just had it set a flag, but I think
@@ -88,7 +85,7 @@ public class ThirdPersonCamera : MonoBehaviour
             {
                 // Lerp the camera's position smoothly out to where it's supposed to be for orbit
                 CameraTransform.position = Vector3.Lerp(CameraTransform.position, followingPosition, .1f);
-                
+
                 // Smoothly rotate the camera to look at the player while it's zooming out. I didn't use 
                 // CameraTransform.LookAt(Player.transform) here because that doesn't happen smoothly and creates
                 // a jarring snap of the camera that's annoying to see.
@@ -109,7 +106,7 @@ public class ThirdPersonCamera : MonoBehaviour
         {
             // Tell the camera that it's no longer in orbiting position
             inFollowingPosition = false;
-            
+
             // Tell the camera to stop zooming in after 3/10 of a second. This is a remnant from when I was trying to
             // do camera zooming constantly with coroutines. Coroutines need a forced stop and start, so this was
             // the call to stop the coroutine. I commandeered the coroutine and just had it set a flag, but I think
@@ -135,6 +132,90 @@ public class ThirdPersonCamera : MonoBehaviour
                 CameraTransform.position = Vector3.Lerp(CameraTransform.position, Player.position + aimingPosition, .2f);
             }
         }
+    }
+
+    private void FixedUpdate()
+    {
+        /*
+         * Moved all of this to the Update() loop to try to stop jitteriness while aiming
+         */
+
+        //// direction is the direction and distance from the player to where the camera should be in orbit
+        //Vector3 direction = new Vector3(0, 0, -distanceFromPlayer);
+        //// rotation is how the camera should orbit (rotate) around the player based on mouse input
+        //Quaternion rotation = Quaternion.Euler(-currentY, currentX, 0);
+        
+        //// followingPosition is based on the direction and rotation calculated above
+        //followingPosition = Player.position + rotation * direction;
+        //// aimingPosition is based on the direction the camera is facing and the offset calculated in Start()
+        //aimingPosition = Quaternion.Euler(0, Camera.main.transform.eulerAngles.y, 0) * aimingOffset;
+
+        //// This block happens if the player is not holding the aim button and the camera needs to 
+        //// be either zooming out or is already zoomed out and should be orbiting the player
+        //if (!playerInSkill)
+        //{
+        //    inAimingPosition = false; // Tell camera that it shouldn't be in aiming position anymore
+            
+        //    // Tell the camera to stop zooming out in half a second. This is a remnant from when I was trying to
+        //    // do camera zooming constantly with coroutines. Coroutines need a forced stop and start, so this was
+        //    // the call to stop the coroutine. I commandeered the coroutine and just had it set a flag, but I think
+        //    // we could better handle this by having some logic to constantly check the distance between the camera
+        //    // and the player and set the flags that way instead of after a set amount of time.
+        //    Invoke("StopZoomOut", .5f);
+
+        //    // This block is camera behavior while zooming back out from aiming, but when it hasn't reached full
+        //    // orbit position yet.
+        //    if (!inFollowingPosition)
+        //    {
+        //        // Lerp the camera's position smoothly out to where it's supposed to be for orbit
+        //        CameraTransform.position = Vector3.Lerp(CameraTransform.position, followingPosition, .1f);
+                
+        //        // Smoothly rotate the camera to look at the player while it's zooming out. I didn't use 
+        //        // CameraTransform.LookAt(Player.transform) here because that doesn't happen smoothly and creates
+        //        // a jarring snap of the camera that's annoying to see.
+        //        Quaternion newRotation = Quaternion.LookRotation(Player.position - CameraTransform.position);
+        //        CameraTransform.rotation = Quaternion.RotateTowards(CameraTransform.rotation, newRotation, .9f);
+        //    }
+        //    // This block is when the camera is in orbit position and following normal behavior
+        //    else
+        //    {
+        //        // Change the camera's position based on mouse input and a set distance from player.
+        //        CameraTransform.position = followingPosition;
+        //        CameraTransform.LookAt(Player.transform); // Look at the player
+        //    }
+        //}
+        //// This block happens if the player is holding the aim button and the camera needs to either be zooming
+        //// in or sticking with the player while they aim
+        //else
+        //{
+        //    // Tell the camera that it's no longer in orbiting position
+        //    inFollowingPosition = false;
+            
+        //    // Tell the camera to stop zooming in after 3/10 of a second. This is a remnant from when I was trying to
+        //    // do camera zooming constantly with coroutines. Coroutines need a forced stop and start, so this was
+        //    // the call to stop the coroutine. I commandeered the coroutine and just had it set a flag, but I think
+        //    // we could better handle this by having some logic to constantly check the distance between the camera
+        //    // and the player and set the flags that way instead of after a set amount of time.
+        //    Invoke("StopZoomIn", .3f);
+
+        //    // This block is camera behavior while zooming in to aiming position but when it hasn't fully reached
+        //    // it's zoomed aiming position destination
+        //    if (!inAimingPosition)
+        //    {
+        //        // Allow aiming rotation of the camera while zooming in
+        //        CameraTransform.rotation = Quaternion.Euler(-currentY, currentX, 0);
+        //        // Smoothly move the camera from orbit to where it should be when aiming
+        //        CameraTransform.position = Vector3.Lerp(CameraTransform.position, Player.position + aimingPosition, .2f);
+        //    }
+        //    // This block is camera behavior while aiming when it has reached its aiming position fully
+        //    else
+        //    {
+        //        // Smoothly rotate the camera so it doesn't leave the player behind or clip over the player
+        //        CameraTransform.rotation = Quaternion.Lerp(CameraTransform.rotation, Quaternion.Euler(-currentY, currentX, 0), 0.5f);
+        //        // Smoothly move the camera's position based on the player so it will follow if the player moves
+        //        CameraTransform.position = Vector3.Lerp(CameraTransform.position, Player.position + aimingPosition, .2f);
+        //    }
+        //}
     }
 
     // StartSkill tells the camera to zoom in

@@ -7,7 +7,7 @@ public class PlayerInput : MonoBehaviour
 {
     public float Speed = 0.25f;
     public float jumpForce = 7;
-    public float ScarfLength = 100f;
+    public float ScarfLength = 25f;
     public float GrappleSpeed = 0.1f;
     public float distanceGround;
 
@@ -25,6 +25,7 @@ public class PlayerInput : MonoBehaviour
     private bool isAiming;
     private bool readyToGrab;
     private bool inMagnesis;
+    private bool haveLetGoOfMouse;
     private Color standardMoveable;
     private Color highlightedMoveable;
     private Color selectedMoveable;
@@ -57,6 +58,7 @@ public class PlayerInput : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Confined;
         distanceGround = GetComponent<CapsuleCollider>().bounds.extents.y;
+        haveLetGoOfMouse = true;
     }
 
     // Update is called once per frame
@@ -64,14 +66,12 @@ public class PlayerInput : MonoBehaviour
     {   
         movementVector = Vector3.zero;
         
-
         // Get movement from WASD
         if (!doGrapple)
         {
             movementVector.x = Input.GetAxis("Horizontal");
             movementVector.z = Input.GetAxis("Vertical");
         }
-
 
         // Sprint
         if (Input.GetKey(KeyCode.LeftShift)) { currentSpeed = Speed * 2; }
@@ -82,7 +82,10 @@ public class PlayerInput : MonoBehaviour
         if (isAiming)
         {
             if (!inMagnesis) { aim(); }
-            if (readyToGrab && Input.GetMouseButton(0)) { Magnesis(); }
+            if (readyToGrab && Input.GetMouseButton(0) && haveLetGoOfMouse)
+            {
+                Magnesis();
+            }
             else if (!readyToGrab && Input.GetMouseButtonDown(0))
             {
                 Grapple();
@@ -112,6 +115,7 @@ public class PlayerInput : MonoBehaviour
             {
                 heldObject.GetComponent<Rigidbody>().freezeRotation = false;
             }
+            haveLetGoOfMouse = true;
         }
 
         // Zooms camera in to player
@@ -122,6 +126,8 @@ public class PlayerInput : MonoBehaviour
         {
             foreach (GameObject mgo in moveableObjects) { mgo.GetComponent<Renderer>().material.SetColor("_Color", standardMoveable); }
             Camera.main.SendMessage("EndSkill");
+            StopMagnesis();
+            haveLetGoOfMouse = true;
         }
 
         // Make movement happen in direction the camera is facing
@@ -129,7 +135,6 @@ public class PlayerInput : MonoBehaviour
         GetComponent<Rigidbody>().MovePosition(transform.position + movementVector * currentSpeed);
         if (movementVector != Vector3.zero && !isAiming) { transform.forward = movementVector; }
         rb.AddForce(movementVector * Speed);
-
 
 
         if (!Physics.Raycast (transform.position, -Vector3.up, distanceGround + 0.1f))
@@ -147,9 +152,6 @@ public class PlayerInput : MonoBehaviour
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
     }
-
-
-
 
     private void aim()
     {
@@ -177,7 +179,7 @@ public class PlayerInput : MonoBehaviour
         // Paint moveable object being aimed at
         if (!inMagnesis && Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit aimHit, ScarfLength) && !doGrapple)
         {
-            if (aimHit.collider.gameObject.tag == "Moveable")
+            if (aimHit.collider.gameObject.tag == "Moveable" && haveLetGoOfMouse)
             {
                 inCrosshairs = aimHit.collider.gameObject;
                 aimHit.collider.GetComponent<Renderer>().material.SetColor("_Color", selectedMoveable);
@@ -215,12 +217,12 @@ public class PlayerInput : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Q) && distanceFromPlayer > 5f)
         {
-            heldObject.transform.position = Vector3.Lerp(heldObject.transform.position, transform.position, 0.025f);
+            heldObject.transform.position = Vector3.Lerp(heldObject.transform.position, transform.position, 0.05f);
             heldObjectOffset = (transform.position - Camera.main.transform.position) + (heldObject.transform.position - transform.position);
         }
-        if (Input.GetKey(KeyCode.E) && distanceFromPlayer < 25f)
+        if (Input.GetKey(KeyCode.E) && distanceFromPlayer < ScarfLength)
         {
-            heldObject.transform.position = Vector3.Lerp(heldObject.transform.position, fromCamera.GetPoint(25f), 0.025f);
+            heldObject.transform.position = Vector3.Lerp(heldObject.transform.position, fromCamera.GetPoint(25f), .05f);
             heldObjectOffset = (transform.position - Camera.main.transform.position) + (heldObject.transform.position - transform.position);
         }
         if (Input.GetKey(KeyCode.Z))
@@ -239,9 +241,11 @@ public class PlayerInput : MonoBehaviour
         // Draw "Scarf" line
         GetComponent<LineRenderer>().SetPosition(0, transform.position);
         GetComponent<LineRenderer>().SetPosition(1, heldObject.transform.position);
-        if (Input.GetMouseButtonUp(0))
+
+        if (Input.GetKeyDown(KeyCode.F) && distanceFromPlayer <= 5f)
         {
-            StopMagnesis();
+
+            ThrowObject(fromCamera.GetPoint(100f) - heldObject.transform.position);
         }
     }
 
@@ -256,7 +260,15 @@ public class PlayerInput : MonoBehaviour
         inMagnesis = false;
         heldObject = null;
         inCrosshairs = null;
+        haveLetGoOfMouse = false;
         GetComponent<LineRenderer>().enabled = false;
+    }
+
+    private void ThrowObject(Vector3 direction)
+    {
+        GameObject toThrow = heldObject;
+        StopMagnesis();
+        toThrow.GetComponent<Rigidbody>().velocity = direction * 1.5f;
     }
 
     // Grapple
@@ -290,7 +302,6 @@ public class PlayerInput : MonoBehaviour
     // Stop Grappling
     private void StopGrapple()
     {
-
         //doGrapple = false;
         GetComponent<LineRenderer>().enabled = false;
         rb.mass = rbOriginalMass;
