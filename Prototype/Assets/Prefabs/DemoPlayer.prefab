@@ -125,13 +125,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Speed: 0.25
   jumpForce: 175
-  ScarfLength: 100
+  ScarfLength: 50
   GrappleSpeed: 1
+  distanceGround: 0
   groundLayers:
     serializedVersion: 2
     m_Bits: 1
   col: {fileID: 3418097252959086715}
   Crosshairs: {fileID: 0}
+  isGrounded: 0
+  isAgainstWallDuringGrapple: 0
+  jumpedGrappledAlready: 0
+  haveGrappled: 0
 --- !u!120 &3418097252959086711
 LineRenderer:
   m_ObjectHideFlags: 0
