@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class SmashTrigger : MonoBehaviour
 {
+
+    public GameObject RockExplosionPrefab;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -20,6 +23,8 @@ public class SmashTrigger : MonoBehaviour
     {
         if(collision.transform.name == "DemoPlayer")
         {
+            gameObject.tag = "Untagged";
+            Instantiate(RockExplosionPrefab, transform.position, Quaternion.Euler(collision.contacts[0].normal));
             Destroy(gameObject);
         }
 
