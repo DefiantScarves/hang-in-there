@@ -4,12 +4,18 @@ using UnityEngine;
 
 public class SmashTrigger : MonoBehaviour
 {
+    public GameObject Player;
 
-    public GameObject RockExplosionPrefab;
+    private bool weakened;
+    private Color normalST;
+    private Color weakenedST;
 
     // Start is called before the first frame update
     void Start()
     {
+        weakened = false;
+        normalST = new Color(255f, 0f, 0f);
+        weakenedST = new Color(0f, 0f, 255f);
     }
 
     // Update is called once per frame
@@ -21,13 +27,20 @@ public class SmashTrigger : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.transform.name == "DemoPlayer")
+        if (!weakened)
         {
-            gameObject.tag = "Untagged";
-            Instantiate(RockExplosionPrefab, transform.position, Quaternion.Euler(collision.contacts[0].normal));
-            collision.gameObject.SendMessage("RemoveMoveableObjectFromList", gameObject);
-            Destroy(gameObject);
+            gameObject.GetComponent<Renderer>().material.SetColor("_Color", weakenedST);
+            Invoke("ResetST", 3f);
+            collision.gameObject.SendMessage("SendBackToPosition", Player.transform.position);
         }
+        else
+        {
+        }
+    }
 
+    private void ResetST()
+    {
+        weakened = false;
+        gameObject.GetComponent<Renderer>().material.SetColor("_Color", normalST);
     }
 }

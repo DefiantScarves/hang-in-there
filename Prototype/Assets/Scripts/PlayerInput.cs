@@ -33,7 +33,6 @@ public class PlayerInput : MonoBehaviour
     private Color selectedMoveable;
     private GameObject inCrosshairs;
     private GameObject heldObject;
-    //private GameObject[] moveableObjects;
     private HashSet<GameObject> moveableObjects;
 
     private Vector3 grappleLocation;
@@ -41,9 +40,6 @@ public class PlayerInput : MonoBehaviour
 
     private Vector3 movementVector;
     private Vector3 currentVelocity;
-
-
-
 
     // Start is called before the first frame update
     void Start()
