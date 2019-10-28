@@ -567,10 +567,10 @@ GameObject:
   - component: {fileID: 625198437}
   - component: {fileID: 625198436}
   - component: {fileID: 625198435}
-  - component: {fileID: 625198434}
   - component: {fileID: 625198438}
+  - component: {fileID: 625198434}
   m_Layer: 0
-  m_Name: Cube (2)
+  m_Name: Boss Projectile
   m_TagString: Moveable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -599,7 +599,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 625198432}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c23b0a36445d1f4fac75386952a52fd, type: 3}
+  m_Script: {fileID: 11500000, guid: a7efde03045a00a43ad4bf648d0cc4ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   RockExplosionPrefab: {fileID: 1825254758179522586, guid: 1d46cbed69767ff4b91b45544e81cce1,
