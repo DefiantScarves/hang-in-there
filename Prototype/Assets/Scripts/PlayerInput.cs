@@ -11,7 +11,6 @@ public class PlayerInput : MonoBehaviour
     public float GrappleSpeed = 0.1f;
     public float distanceGround;
 
-
     public LayerMask groundLayers;
     public CapsuleCollider col;
     public Image Crosshairs;
@@ -34,7 +33,8 @@ public class PlayerInput : MonoBehaviour
     private Color selectedMoveable;
     private GameObject inCrosshairs;
     private GameObject heldObject;
-    private GameObject[] moveableObjects;
+    //private GameObject[] moveableObjects;
+    private HashSet<GameObject> moveableObjects;
 
     private Vector3 grappleLocation;
     private bool doGrapple = false;
@@ -57,7 +57,11 @@ public class PlayerInput : MonoBehaviour
         standardMoveable = new Color(0f, 0f, 0f);
         highlightedMoveable = new Color(.93f, .15f, 1f);
         selectedMoveable = new Color(1f, .89f, .255f);
-        moveableObjects = GameObject.FindGameObjectsWithTag("Moveable");
+
+        // Search for all existing moveable objects and put them in a hash set
+        GameObject[] foundMoveableObjects = GameObject.FindGameObjectsWithTag("Moveable");
+        moveableObjects = new HashSet<GameObject>(foundMoveableObjects);
+
         Crosshairs.enabled = false;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Confined;
@@ -365,5 +369,15 @@ public class PlayerInput : MonoBehaviour
         rb.angularVelocity = Vector3.zero;
 
         transform.position = Vector3.Lerp(transform.position, grappleLocation, GrappleSpeed * Time.deltaTime);
+    }
+
+    public void AddMoveableObjectToList(GameObject toAdd)
+    {
+        moveableObjects.Add(toAdd);
+    }
+
+    public void RemoveMoveableObjectFromList(GameObject toRemove)
+    {
+        moveableObjects.Remove(toRemove);
     }
 }

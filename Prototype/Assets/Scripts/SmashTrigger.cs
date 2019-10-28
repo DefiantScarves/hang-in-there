@@ -25,6 +25,7 @@ public class SmashTrigger : MonoBehaviour
         {
             gameObject.tag = "Untagged";
             Instantiate(RockExplosionPrefab, transform.position, Quaternion.Euler(collision.contacts[0].normal));
+            collision.gameObject.SendMessage("RemoveMoveableObjectFromList", gameObject);
             Destroy(gameObject);
         }
 
