@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SmashTrigger : MonoBehaviour
+public class BossProjectile : MonoBehaviour
 {
-
     public GameObject RockExplosionPrefab;
 
     // Start is called before the first frame update
@@ -15,13 +14,13 @@ public class SmashTrigger : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.transform.name == "DemoPlayer")
+        if (collision.transform.name == "DemoPlayer")
         {
             gameObject.tag = "Untagged";
             Instantiate(RockExplosionPrefab, transform.position, Quaternion.Euler(collision.contacts[0].normal));
