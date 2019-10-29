@@ -6,7 +6,6 @@ public class SmashTrigger : MonoBehaviour
 {
     public GameObject Player;
     public float TimeBeforeReset;
-    public float SpeedToFlyBackToPlayer;
 
     private bool weakened;
     private Color normalST;
