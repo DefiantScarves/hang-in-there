@@ -240,6 +240,7 @@ public class PlayerInput : MonoBehaviour
         }
         heldObject.GetComponent<Rigidbody>().freezeRotation = true;
         heldObject.GetComponent<Rigidbody>().useGravity = false;
+        heldObject.SendMessage("Caught");
 
         Ray fromCamera = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
         float distanceFromCamera = Vector3.Distance(Camera.main.transform.position, Camera.main.transform.position + heldObjectOffset);
