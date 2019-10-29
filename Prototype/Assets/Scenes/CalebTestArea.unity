@@ -482,7 +482,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82ec191996221fe4e91908b98db33315, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpeedToFlyBackToPlayer: 0
+  SpeedToFlyBackToPlayer: 0.025
 --- !u!1 &404286841 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8483978942145070374, guid: c027cdd901c95ff4487fb38da83aa97f,
@@ -645,7 +645,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Player: {fileID: 404286841}
   TimeBeforeReset: 0
-  SpeedToFlyBackToPlayer: 0
 --- !u!65 &598301255
 BoxCollider:
   m_ObjectHideFlags: 0
