@@ -6,15 +6,20 @@ public class BossProjectile : MonoBehaviour
 {
     public GameObject RockExplosionPrefab;
 
+    public float Speed = 0.1f;
+
+    private Vector3 movementVector;
+
     // Start is called before the first frame update
     void Start()
     {
+        movementVector = transform.forward * Speed;
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        GetComponent<Rigidbody>().MovePosition(transform.position + movementVector);
     }
 
 
