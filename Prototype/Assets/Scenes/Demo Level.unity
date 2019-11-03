@@ -333,10 +333,20 @@ PrefabInstance:
       propertyPath: Speed
       value: 0.2
       objectReference: {fileID: 0}
+    - target: {fileID: 3418097252959086713, guid: 92b65f7ff914183499d623de4af0a838,
+        type: 3}
+      propertyPath: GrappleSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3418097252959086713, guid: 92b65f7ff914183499d623de4af0a838,
+        type: 3}
+      propertyPath: jumpForce
+      value: 265
+      objectReference: {fileID: 0}
     - target: {fileID: 3418097252959086714, guid: 92b65f7ff914183499d623de4af0a838,
         type: 3}
       propertyPath: m_Mass
-      value: 15
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 3418097252959086714, guid: 92b65f7ff914183499d623de4af0a838,
         type: 3}
@@ -533,6 +543,51 @@ Light:
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!1 &245895979
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 245895981}
+  - component: {fileID: 245895980}
+  m_Layer: 0
+  m_Name: UI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &245895980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 245895979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37d9374c8a83f364db089e2d7be7b0db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gamePaused: 0
+  pauseMenu: {fileID: 0}
+--- !u!4 &245895981
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 245895979}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 218.22768, y: 201.88422, z: 221.04965}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 14
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &259492721
 GameObject:
   m_ObjectHideFlags: 0
@@ -4977,6 +5032,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Test Boss
+      objectReference: {fileID: 0}
+    - target: {fileID: 7626966516346984548, guid: da16288acd0d2cd4d974334e658c1a8c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1465141243816760046, guid: da16288acd0d2cd4d974334e658c1a8c,
         type: 3}
