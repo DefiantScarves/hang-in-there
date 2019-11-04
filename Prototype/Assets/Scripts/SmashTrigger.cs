@@ -34,7 +34,7 @@ public class SmashTrigger : MonoBehaviour
             gameObject.GetComponent<Renderer>().material.SetColor("_Color", weakenedST);
             Invoke("ResetST", TimeBeforeReset);
             collision.gameObject.GetComponent<Rigidbody>().velocity = new Vector3();
-            collision.gameObject.SendMessage("SendBackToPosition", Player.transform.position);
+            collision.gameObject.SendMessage("SendBackToPosition", Player.transform.position, SendMessageOptions.DontRequireReceiver);
             weakened = true;
         }
         else
