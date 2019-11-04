@@ -9,11 +9,17 @@ public class BossProjectile : MonoBehaviour
     public float Speed = 0.1f;
 
     private Vector3 movementVector;
+    private GameObject player;
 
     // Start is called before the first frame update
     void Start()
     {
         movementVector = transform.forward * Speed;
+        player = GameObject.Find("Player");
+        if (player == null)
+        {
+            player = GameObject.Find("DemoPlayer");
+        }
     }
 
     // Update is called once per frame
@@ -29,7 +35,7 @@ public class BossProjectile : MonoBehaviour
         //{
             gameObject.tag = "Untagged";
             Instantiate(RockExplosionPrefab, transform.position, Quaternion.Euler(collision.contacts[0].normal));
-            collision.gameObject.SendMessage("RemoveMoveableObjectFromList", gameObject);
+            player.SendMessage("RemoveMoveableObjectFromList", gameObject);
             Destroy(this.gameObject);
         //}
 

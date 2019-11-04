@@ -27,6 +27,8 @@ public class ThirdPersonCamera : MonoBehaviour
     private Vector3 aimingPosition; // position of where camera should be when aiming
     private Vector3 followingPosition; // position of where camera shoud be when orbiting
 
+    private Vector3? clippingDirection;
+
     private void Start()
     {
         CameraTransform = transform; // Transform of object the script is on
@@ -45,6 +47,8 @@ public class ThirdPersonCamera : MonoBehaviour
         // Start the scene in orbit, not in aiming position
         inAimingPosition = false;
         inFollowingPosition = true;
+
+        clippingDirection = null;
     }
 
     private void Update()
@@ -95,9 +99,17 @@ public class ThirdPersonCamera : MonoBehaviour
             // This block is when the camera is in orbit position and following normal behavior
             else
             {
-                // Change the camera's position based on mouse input and a set distance from player.
-                CameraTransform.position = followingPosition;
-                CameraTransform.LookAt(Player.transform); // Look at the player
+                Vector3 movementDirection = transform.position + followingPosition;
+                if (Vector3.Dot(movementDirection, clippingDirection.GetValueOrDefault()) > .9f && clippingDirection != null)
+                {
+                    print("Going in same direction");
+                }
+                //else
+                //{
+                    // Change the camera's position based on mouse input and a set distance from player.
+                    CameraTransform.position = followingPosition;
+                    CameraTransform.LookAt(Player.transform); // Look at the player
+                //}
             }
         }
         // This block happens if the player is holding the aim button and the camera needs to either be zooming
@@ -166,5 +178,17 @@ public class ThirdPersonCamera : MonoBehaviour
     private void StopZoomOut()
     {
         inFollowingPosition = true;
+    }
+
+    public void OnTriggerEnter(Collider other)
+    {
+        print("Camera triggered " + other.gameObject.name);
+        Vector3 direction = transform.position + other.ClosestPointOnBounds(transform.position);
+        clippingDirection = direction;
+    }
+
+    public void OnTriggerExit(Collider other)
+    {
+        clippingDirection = null;
     }
 }
