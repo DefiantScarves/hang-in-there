@@ -5,6 +5,8 @@
     "com.unity.collab-proxy": "1.2.16",
     "com.unity.package-manager-ui": "2.1.2",
     "com.unity.purchasing": "2.0.6",
+    "com.unity.render-pipelines.high-definition": "5.16.1-preview",
+    "com.unity.scriptablebuildpipeline": "1.5.4",
     "com.unity.terrain-tools": "1.1.4-preview",
     "com.unity.textmeshpro": "2.0.1",
     "com.unity.timeline": "1.0.0",
