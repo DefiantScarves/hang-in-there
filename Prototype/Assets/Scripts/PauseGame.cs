@@ -35,4 +35,12 @@ public class PauseGame : MonoBehaviour
             }
         }
     }
+
+    public void UnpauseGame()
+    {
+        pauseMenu.SetActive(false);
+        Cursor.visible = false;
+        gamePaused = false;
+        Time.timeScale = 1;
+    }
 }

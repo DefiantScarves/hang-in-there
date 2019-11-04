@@ -25,13 +25,13 @@ public class BossProjectile : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.transform.name == "DemoPlayer")
-        {
+        //if (collision.transform.name == "DemoPlayer")
+        //{
             gameObject.tag = "Untagged";
             Instantiate(RockExplosionPrefab, transform.position, Quaternion.Euler(collision.contacts[0].normal));
             collision.gameObject.SendMessage("RemoveMoveableObjectFromList", gameObject);
             Destroy(this.gameObject);
-        }
+        //}
 
     }
 }
