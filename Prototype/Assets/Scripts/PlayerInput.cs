@@ -290,7 +290,7 @@ public class PlayerInput : MonoBehaviour
         GetComponent<LineRenderer>().SetPosition(0, transform.position);
         GetComponent<LineRenderer>().SetPosition(1, heldObject.transform.position);
 
-        if (Input.GetKeyDown(KeyCode.F) && distanceFromPlayer <= 8f)
+        if (Input.GetKeyDown(KeyCode.F) && distanceFromPlayer <= 10f)
         {
 
             ThrowObject(fromCamera.GetPoint(100f) - heldObject.transform.position);
