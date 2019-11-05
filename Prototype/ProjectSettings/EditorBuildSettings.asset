@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Demo Level.unity
-    guid: 39563f4309f78bf408cdaad756d90fb8
+    path: Assets/Scenes/HDRPVS.unity
+    guid: 5f7b329f03b349e439861564f42f0671
   m_configObjects: {}
