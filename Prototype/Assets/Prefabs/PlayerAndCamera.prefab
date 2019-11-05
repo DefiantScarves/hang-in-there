@@ -498,9 +498,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8483978942145070374}
   serializedVersion: 2
-  m_Mass: 25
-  m_Drag: 0.011
-  m_AngularDrag: 0.01
+  m_Mass: 75
+  m_Drag: 1
+  m_AngularDrag: 1
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -519,7 +519,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Speed: 0.25
-  jumpForce: 175
+  jumpForce: 1700
   ScarfLength: 150
   GrappleSpeed: 1
   distanceGround: 0
