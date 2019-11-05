@@ -93,7 +93,7 @@ public class PlayerInput : MonoBehaviour
         if (!isGrounded && moveForwardMomentum && !isAgainstWallDuringGrapple)
         {
             rb.AddForce(transform.forward * (GrappleSpeed * 0.5f), ForceMode.Impulse);
-            rb.AddForce(transform.up * (GrappleSpeed), ForceMode.Impulse);
+            //rb.AddForce(transform.up * (GrappleSpeed), ForceMode.Impulse);
         }
 
 
@@ -290,7 +290,7 @@ public class PlayerInput : MonoBehaviour
         GetComponent<LineRenderer>().SetPosition(0, transform.position);
         GetComponent<LineRenderer>().SetPosition(1, heldObject.transform.position);
 
-        if (Input.GetKeyDown(KeyCode.F) && distanceFromPlayer <= 5f)
+        if (Input.GetKeyDown(KeyCode.F) && distanceFromPlayer <= 8f)
         {
 
             ThrowObject(fromCamera.GetPoint(100f) - heldObject.transform.position);
