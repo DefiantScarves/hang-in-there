@@ -6,9 +6,9 @@ using UnityEngine.UI;
 public class PlayerInput : MonoBehaviour
 {
     public float Speed = 0.25f;
-    public float jumpForce = 7;
+    public float jumpForce = 120f;
     public float ScarfLength = 25f;
-    public float GrappleSpeed = 0.1f;
+    public float GrappleSpeed = 0.05f;
     public float distanceGround;
 
     public LayerMask groundLayers;
@@ -18,6 +18,8 @@ public class PlayerInput : MonoBehaviour
     public bool isAgainstWallDuringGrapple = false;
     public bool jumpedGrappledAlready = false;
     public bool haveGrappled = false;
+    public bool moveForwardMomentum = false;
+    public bool movementOccuredDuringMomentum = false;
 
     private Rigidbody rb;
     private float rbOriginalMass;
@@ -63,6 +65,7 @@ public class PlayerInput : MonoBehaviour
         Cursor.lockState = CursorLockMode.Confined;
         distanceGround = GetComponent<CapsuleCollider>().bounds.extents.y;
         haveLetGoOfMouse = true;
+        GrappleSpeed = 0.05f;
     }
 
     // Update is called once per frame
@@ -77,12 +80,24 @@ public class PlayerInput : MonoBehaviour
             movementVector.z = Input.GetAxis("Vertical");
         }
 
+        if (Input.GetMouseButton(0))
+        {
+            moveForwardMomentum = false;
+        }
+        else
+        {
+            moveForwardMomentum = true;
+        }
 
         // Velocity for after un-grappling
-        if (!isGrounded && haveGrappled)
+        if (!isGrounded && moveForwardMomentum && !isAgainstWallDuringGrapple)
         {
-            rb.AddForce(transform.forward * GrappleSpeed, ForceMode.Impulse);
+            rb.AddForce(transform.forward * (GrappleSpeed * 0.5f), ForceMode.Impulse);
+            //rb.AddForce(transform.up * (GrappleSpeed), ForceMode.Impulse);
         }
+
+
+
 
         // Sprint
         if (Input.GetKey(KeyCode.LeftShift)) { currentSpeed = Speed * 2; }
@@ -158,6 +173,7 @@ public class PlayerInput : MonoBehaviour
             isGrounded = true;
             jumpedGrappledAlready = false;
             haveGrappled = false;
+
         }
 
         // Jump
@@ -240,6 +256,7 @@ public class PlayerInput : MonoBehaviour
         }
         heldObject.GetComponent<Rigidbody>().freezeRotation = true;
         heldObject.GetComponent<Rigidbody>().useGravity = false;
+        heldObject.SendMessage("Caught");
 
         Ray fromCamera = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
         float distanceFromCamera = Vector3.Distance(Camera.main.transform.position, Camera.main.transform.position + heldObjectOffset);
@@ -273,7 +290,7 @@ public class PlayerInput : MonoBehaviour
         GetComponent<LineRenderer>().SetPosition(0, transform.position);
         GetComponent<LineRenderer>().SetPosition(1, heldObject.transform.position);
 
-        if (Input.GetKeyDown(KeyCode.F) && distanceFromPlayer <= 5f)
+        if (Input.GetKeyDown(KeyCode.F) && distanceFromPlayer <= 10f)
         {
 
             ThrowObject(fromCamera.GetPoint(100f) - heldObject.transform.position);
@@ -334,6 +351,7 @@ public class PlayerInput : MonoBehaviour
     private void StopGrapple()
     {
         //doGrapple = false;
+        GrappleSpeed = 0.05f;
         GetComponent<LineRenderer>().enabled = false;
         rb.mass = rbOriginalMass;
         rb.useGravity = true;
@@ -364,7 +382,7 @@ public class PlayerInput : MonoBehaviour
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
-        transform.position = Vector3.Lerp(transform.position, grappleLocation, GrappleSpeed * Time.deltaTime);
+        transform.position = Vector3.Lerp(transform.position, grappleLocation, (GrappleSpeed += 0.05f) * Time.deltaTime);
     }
 
     public void AddMoveableObjectToList(GameObject toAdd)
