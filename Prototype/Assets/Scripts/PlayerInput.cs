@@ -49,7 +49,7 @@ public class PlayerInput : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rbOriginalMass = rb.mass;
         col = GetComponent<CapsuleCollider>();
-        GetComponent<LineRenderer>().enabled = false; // Hide "Scarf"
+        //GetComponent<LineRenderer>().enabled = false; // Hide "Scarf"
         currentSpeed = Speed;
         isAiming = false;
         standardMoveable = new Color(0f, 0f, 0f);
@@ -248,7 +248,7 @@ public class PlayerInput : MonoBehaviour
     private void Magnesis()
     {
         inMagnesis = true;
-        GetComponent<LineRenderer>().enabled = true; // Show "Scarf"
+        //GetComponent<LineRenderer>().enabled = true; // Show "Scarf"
         if (heldObject == null)
         {
             heldObject = inCrosshairs;
@@ -287,8 +287,8 @@ public class PlayerInput : MonoBehaviour
         }
 
         // Draw "Scarf" line
-        GetComponent<LineRenderer>().SetPosition(0, transform.position);
-        GetComponent<LineRenderer>().SetPosition(1, heldObject.transform.position);
+        //GetComponent<LineRenderer>().SetPosition(0, transform.position);
+        //GetComponent<LineRenderer>().SetPosition(1, heldObject.transform.position);
 
         if (Input.GetKeyDown(KeyCode.F) && distanceFromPlayer <= 10f)
         {
@@ -309,7 +309,7 @@ public class PlayerInput : MonoBehaviour
         heldObject = null;
         inCrosshairs = null;
         haveLetGoOfMouse = false;
-        GetComponent<LineRenderer>().enabled = false;
+        //GetComponent<LineRenderer>().enabled = false;
     }
 
     private void ThrowObject(Vector3 direction)
@@ -352,7 +352,7 @@ public class PlayerInput : MonoBehaviour
     {
         //doGrapple = false;
         GrappleSpeed = 0.05f;
-        GetComponent<LineRenderer>().enabled = false;
+        //GetComponent<LineRenderer>().enabled = false;
         rb.mass = rbOriginalMass;
         rb.useGravity = true;
         //rb.freezeRotation = false;
@@ -368,10 +368,10 @@ public class PlayerInput : MonoBehaviour
     // Moves the player towards grappled location.
     private void GrappleMovePlayer()
     {
-        GetComponent<LineRenderer>().enabled = true; // Show "Scarf"
+        //GetComponent<LineRenderer>().enabled = true; // Show "Scarf"
         // Draw "Scarf" line
-        GetComponent<LineRenderer>().SetPosition(0, transform.position);
-        GetComponent<LineRenderer>().SetPosition(1, grappleLocation);
+        //GetComponent<LineRenderer>().SetPosition(0, transform.position);
+        //GetComponent<LineRenderer>().SetPosition(1, grappleLocation);
 
         rb.mass = 0.1f;
         rb.useGravity = false;
