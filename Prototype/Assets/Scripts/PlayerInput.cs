@@ -273,6 +273,10 @@ public class PlayerInput : MonoBehaviour
 
     private void Magnesis()
     {
+        // This line makes it so, while aiming, the player and camera both face in the 
+        // same direction and the they move together when rotating around the y axis.
+        transform.rotation = Quaternion.Euler(0, Camera.main.transform.eulerAngles.y, 0);
+
         inMagnesis = true;
         if (heldObject == null && !stowedObject)
         {
