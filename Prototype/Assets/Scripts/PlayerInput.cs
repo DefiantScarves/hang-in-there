@@ -38,6 +38,7 @@ public class PlayerInput : MonoBehaviour
     private GameObject inCrosshairs;
     private GameObject heldObject;
     private Dictionary<GameObject, Material> moveableObjects;
+    private HashSet<GameObject> grappleObjects;
 
     private Vector3 grappleLocation;
     private bool doGrapple = false;
@@ -63,6 +64,10 @@ public class PlayerInput : MonoBehaviour
         {
             moveableObjects.Add(MO, MO.GetComponent<MeshRenderer>().material);
         }
+
+        // Search for all existing grapple objects and put them in a hash set
+        GameObject[] foundGrappleObjects = GameObject.FindGameObjectsWithTag("Grapple");
+        grappleObjects = new HashSet<GameObject>(foundGrappleObjects);
 
         Crosshairs.enabled = false;
         Cursor.visible = false;
@@ -361,7 +366,7 @@ public class PlayerInput : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, ScarfLength))
         {
-            if (hit.collider.CompareTag("Untagged"))
+            if (hit.collider.CompareTag("Grapple"))
             {
                 grappleLocation = hit.point;
                 doGrapple = true;
