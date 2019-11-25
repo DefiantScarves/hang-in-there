@@ -23,7 +23,7 @@ public class MoveableObject : MonoBehaviour
         {
             transform.position = Vector3.Slerp(transform.position, MoveToHere, SpeedToFlyBackToPlayer);
         }
-        if (Vector3.Distance(transform.position, MoveToHere) < 1f)
+        if (Vector3.Distance(transform.position, MoveToHere) < 6f)
         {
             SentFromSmashTrigger = false;
         }
