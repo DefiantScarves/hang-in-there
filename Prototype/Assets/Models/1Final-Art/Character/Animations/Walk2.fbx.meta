@@ -5,7 +5,7 @@ ModelImporter:
   internalIDToNameTable:
   - first:
       74: 1827226128182048838
-    second: Take 001
+    second: Walk2
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -25,7 +25,7 @@ ModelImporter:
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
-    importConstraints: 0
+    importConstraints: 1
     animationCompression: 3
     animationRotationError: 0.5
     animationPositionError: 0.5
@@ -35,11 +35,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Take 001
+      name: Walk2
       takeName: Take 001
       internalID: 1827226128182048838
-      firstFrame: 109
-      lastFrame: 153
+      firstFrame: 111
+      lastFrame: 152
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
