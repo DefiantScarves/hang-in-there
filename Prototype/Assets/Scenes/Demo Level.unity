@@ -120,36 +120,12 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &38797350
+--- !u!1 &38797350 stripped
 GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 1812935221693604739, guid: da16288acd0d2cd4d974334e658c1a8c,
+    type: 3}
+  m_PrefabInstance: {fileID: 8709121435583651118}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 38797351}
-  m_Layer: 0
-  m_Name: Attack Point
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &38797351
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 38797350}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.482, z: 1.859}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1748129089}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &98219440
 GameObject:
   m_ObjectHideFlags: 0
@@ -2222,6 +2198,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Player: {fileID: 0}
+  Rune: {fileID: 0}
+  StandardColor: {fileID: 0}
+  WeakenedColor: {fileID: 0}
   TimeBeforeReset: 0
 --- !u!1 &1135394630
 GameObject:
@@ -3591,12 +3570,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1679373960}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &1726002770 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2634080886787811714, guid: 9d6848324d4548e47a198d46e16807c7,
-    type: 3}
-  m_PrefabInstance: {fileID: 2634080886144016336}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1748129084 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7626966516346984548, guid: da16288acd0d2cd4d974334e658c1a8c,
@@ -3619,12 +3592,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 14
   m_CollisionDetection: 0
---- !u!4 &1748129089 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1465141243816760046, guid: da16288acd0d2cd4d974334e658c1a8c,
-    type: 3}
-  m_PrefabInstance: {fileID: 8709121435583651118}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1859565634
 GameObject:
   m_ObjectHideFlags: 0
@@ -5118,6 +5085,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PauseMenuGameObject
       objectReference: {fileID: 0}
+    - target: {fileID: 8990437724552491177, guid: 1b0123fc237b03249b040ade95fa5645,
+        type: 3}
+      propertyPath: pauseMenu
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 8990437724552491182, guid: 1b0123fc237b03249b040ade95fa5645,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -5173,10 +5145,5 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8990437724552491177, guid: 1b0123fc237b03249b040ade95fa5645,
-        type: 3}
-      propertyPath: pauseMenu
-      value: 
-      objectReference: {fileID: 1726002770}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1b0123fc237b03249b040ade95fa5645, type: 3}

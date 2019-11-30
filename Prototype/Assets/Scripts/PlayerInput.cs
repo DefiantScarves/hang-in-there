@@ -10,10 +10,16 @@ public class PlayerInput : MonoBehaviour
     public float ScarfLength = 25f;
     public float GrappleSpeed = 0.05f;
     public float distanceGround;
+    public float ThrowSpeed = 1.5f;
 
+    public int PlayerHealth = 3;
+
+    public Material HighlightedMoveable;
+    public Material SelectedMoveable;
     public LayerMask groundLayers;
     public CapsuleCollider col;
     public Image Crosshairs;
+    public Transform StowPoint;
     public bool isGrounded = false;
     public bool isAgainstWallDuringGrapple = false;
     public bool jumpedGrappledAlready = false;
@@ -30,12 +36,11 @@ public class PlayerInput : MonoBehaviour
     private bool readyToGrab;
     private bool inMagnesis;
     private bool haveLetGoOfMouse;
-    private Color standardMoveable;
-    private Color highlightedMoveable;
-    private Color selectedMoveable;
+    private bool stowedObject;
     private GameObject inCrosshairs;
     private GameObject heldObject;
-    private HashSet<GameObject> moveableObjects;
+    private Dictionary<GameObject, Material> moveableObjects;
+    private HashSet<GameObject> grappleObjects;
 
     private Vector3 grappleLocation;
     private bool doGrapple = false;
@@ -49,16 +54,22 @@ public class PlayerInput : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rbOriginalMass = rb.mass;
         col = GetComponent<CapsuleCollider>();
-        GetComponent<LineRenderer>().enabled = false; // Hide "Scarf"
+        //GetComponent<LineRenderer>().enabled = false; // Hide "Scarf"
         currentSpeed = Speed;
         isAiming = false;
-        standardMoveable = new Color(0f, 0f, 0f);
-        highlightedMoveable = new Color(.93f, .15f, 1f);
-        selectedMoveable = new Color(1f, .89f, .255f);
 
         // Search for all existing moveable objects and put them in a hash set
         GameObject[] foundMoveableObjects = GameObject.FindGameObjectsWithTag("Moveable");
-        moveableObjects = new HashSet<GameObject>(foundMoveableObjects);
+        moveableObjects = new Dictionary<GameObject, Material>();
+
+        foreach (GameObject MO in foundMoveableObjects)
+        {
+            moveableObjects.Add(MO, MO.GetComponent<MeshRenderer>().material);
+        }
+
+        // Search for all existing grapple objects and put them in a hash set
+        GameObject[] foundGrappleObjects = GameObject.FindGameObjectsWithTag("Grapple");
+        grappleObjects = new HashSet<GameObject>(foundGrappleObjects);
 
         Crosshairs.enabled = false;
         Cursor.visible = false;
@@ -66,11 +77,13 @@ public class PlayerInput : MonoBehaviour
         distanceGround = GetComponent<CapsuleCollider>().bounds.extents.y;
         haveLetGoOfMouse = true;
         GrappleSpeed = 0.05f;
+        stowedObject = false;
     }
 
     // Update is called once per frame
     void Update()
-    {   
+    {
+
         movementVector = Vector3.zero;
         
         // Get movement from WASD
@@ -96,9 +109,6 @@ public class PlayerInput : MonoBehaviour
             //rb.AddForce(transform.up * (GrappleSpeed), ForceMode.Impulse);
         }
 
-
-
-
         // Sprint
         if (Input.GetKey(KeyCode.LeftShift)) { currentSpeed = Speed * 2; }
         else { currentSpeed = Speed; }
@@ -111,6 +121,13 @@ public class PlayerInput : MonoBehaviour
             if (readyToGrab && Input.GetMouseButton(0) && haveLetGoOfMouse)
             {
                 Magnesis();
+            }
+            else if (stowedObject && Input.GetKey(KeyCode.F)) 
+            {
+                stowedObject = false;
+                Ray fromCamera = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+                ThrowObject(fromCamera.GetPoint(100f) - Camera.main.transform.position);
+                StopMagnesis();
             }
             else if (!readyToGrab && Input.GetMouseButtonDown(0))
             {
@@ -141,7 +158,7 @@ public class PlayerInput : MonoBehaviour
             {
                 heldObject.GetComponent<Rigidbody>().freezeRotation = false;
             }
-            haveLetGoOfMouse = true;
+                haveLetGoOfMouse = true;
         }
 
         // Zooms camera in to player
@@ -150,7 +167,7 @@ public class PlayerInput : MonoBehaviour
         // Zooms camera back out to orbit and clears any skill-specific stuff
         if (Input.GetMouseButtonUp(1))
         {
-            foreach (GameObject mgo in moveableObjects) { mgo.GetComponent<Renderer>().material.SetColor("_Color", standardMoveable); }
+            foreach (KeyValuePair<GameObject, Material> mgo in moveableObjects) { mgo.Key.GetComponent<MeshRenderer>().material = mgo.Value; }
             Camera.main.SendMessage("EndSkill");
             StopMagnesis();
             haveLetGoOfMouse = true;
@@ -173,7 +190,6 @@ public class PlayerInput : MonoBehaviour
             isGrounded = true;
             jumpedGrappledAlready = false;
             haveGrappled = false;
-
         }
 
         // Jump
@@ -198,6 +214,11 @@ public class PlayerInput : MonoBehaviour
         {
             haveGrappled = false;
         }
+
+        if (heldObject != null && stowedObject)
+        {
+            heldObject.transform.position = Vector3.Lerp(heldObject.transform.position, StowPoint.position, 0.3f);
+        }
     }
 
     private void aim()
@@ -206,54 +227,65 @@ public class PlayerInput : MonoBehaviour
         // same direction and the they move together when rotating around the y axis.
         transform.rotation = Quaternion.Euler(0, Camera.main.transform.eulerAngles.y, 0);
 
-        // Paint moveable objects that are visible
-        foreach (GameObject mgo in moveableObjects)
+        if (!stowedObject)
         {
-            Ray toGo = new Ray(transform.position, mgo.transform.position - transform.position);
-            if (!inMagnesis && Physics.Raycast(toGo, out RaycastHit hitInfo))
+            // Paint moveable objects that are visible
+            foreach (KeyValuePair<GameObject, Material> mgo in moveableObjects)
             {
-                if (hitInfo.collider.gameObject.tag == "Moveable")
+                Ray toGo = new Ray(transform.position, mgo.Key.transform.position - transform.position);
+                if (!inMagnesis && Physics.Raycast(toGo, out RaycastHit hitInfo))
                 {
-                    mgo.GetComponent<Renderer>().material.SetColor("_Color", highlightedMoveable);
+                    if (hitInfo.collider.gameObject.tag == "Moveable")
+                    {
+                        mgo.Key.GetComponent<MeshRenderer>().material = HighlightedMoveable;
+                    }
+                    else
+                    {
+                        mgo.Key.GetComponent<Renderer>().material = mgo.Value;
+                    }
                 }
+            }
+
+            // Paint moveable object being aimed at
+            if (!inMagnesis && Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit aimHit, ScarfLength) && !doGrapple)
+            {
+                if (aimHit.collider.gameObject.tag == "Moveable" && haveLetGoOfMouse)
+                {
+                    inCrosshairs = aimHit.collider.gameObject;
+                    aimHit.collider.GetComponent<MeshRenderer>().material = SelectedMoveable;
+                    readyToGrab = true;
+                }
+                // If object aimed at is not moveable
                 else
                 {
-                    mgo.GetComponent<Renderer>().material.SetColor("_Color", standardMoveable);
+                    readyToGrab = false;
                 }
             }
-        }
-
-        // Paint moveable object being aimed at
-        if (!inMagnesis && Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit aimHit, ScarfLength) && !doGrapple)
-        {
-            if (aimHit.collider.gameObject.tag == "Moveable" && haveLetGoOfMouse)
-            {
-                inCrosshairs = aimHit.collider.gameObject;
-                aimHit.collider.GetComponent<Renderer>().material.SetColor("_Color", selectedMoveable);
-                readyToGrab = true;
-            }
-            // If object aimed at is not moveable
+            // If no object is aimed at
             else
             {
                 readyToGrab = false;
             }
         }
-        // If no object is aimed at
         else
         {
-            readyToGrab = false;
+            heldObject.GetComponent<MeshRenderer>().material = SelectedMoveable;
         }
+        
     }
 
     private void Magnesis()
     {
+        // This line makes it so, while aiming, the player and camera both face in the 
+        // same direction and the they move together when rotating around the y axis.
+        transform.rotation = Quaternion.Euler(0, Camera.main.transform.eulerAngles.y, 0);
+
         inMagnesis = true;
-        GetComponent<LineRenderer>().enabled = true; // Show "Scarf"
-        if (heldObject == null)
+        if (heldObject == null && !stowedObject)
         {
             heldObject = inCrosshairs;
-            heldObjectOffset = (transform.position - Camera.main.transform.position) + (heldObject.transform.position - transform.position);
         }
+        heldObjectOffset = (transform.position - Camera.main.transform.position) + (heldObject.transform.position - transform.position);
         heldObject.GetComponent<Rigidbody>().freezeRotation = true;
         heldObject.GetComponent<Rigidbody>().useGravity = false;
         heldObject.SendMessage("Caught");
@@ -268,9 +300,13 @@ public class PlayerInput : MonoBehaviour
             heldObject.transform.position = Vector3.Lerp(heldObject.transform.position, transform.position, 0.05f);
             heldObjectOffset = (transform.position - Camera.main.transform.position) + (heldObject.transform.position - transform.position);
         }
+        if (Input.GetKey(KeyCode.Q) && distanceFromPlayer <= 8F)
+        {
+            stowedObject = true;
+        }
         if (Input.GetKey(KeyCode.E) && distanceFromPlayer < ScarfLength)
         {
-            heldObject.transform.position = Vector3.Lerp(heldObject.transform.position, fromCamera.GetPoint(25f), .05f);
+            heldObject.transform.position = Vector3.Lerp(heldObject.transform.position, fromCamera.GetPoint(ScarfLength + 25f), .05f);
             heldObjectOffset = (transform.position - Camera.main.transform.position) + (heldObject.transform.position - transform.position);
         }
         if (Input.GetKey(KeyCode.Z))
@@ -286,37 +322,35 @@ public class PlayerInput : MonoBehaviour
             heldObject.transform.Rotate(0f, 0f, 1f);
         }
 
-        // Draw "Scarf" line
-        GetComponent<LineRenderer>().SetPosition(0, transform.position);
-        GetComponent<LineRenderer>().SetPosition(1, heldObject.transform.position);
-
-        if (Input.GetKeyDown(KeyCode.F) && distanceFromPlayer <= 10f)
+        if (Input.GetKeyDown(KeyCode.F))
         {
-
-            ThrowObject(fromCamera.GetPoint(100f) - heldObject.transform.position);
+            stowedObject = false;
+            ThrowObject(fromCamera.GetPoint(100f) - Camera.main.transform.position);
         }
     }
 
     private void StopMagnesis()
     {
-        if (heldObject != null)
+        if (!stowedObject)
         {
-            heldObject.GetComponent<Rigidbody>().freezeRotation = false;
-            heldObject.GetComponent<Rigidbody>().useGravity = true;
+            if (heldObject != null)
+            {
+                heldObject.GetComponent<Rigidbody>().freezeRotation = false;
+                heldObject.GetComponent<Rigidbody>().useGravity = true;
+            }
+            heldObject = null;
+            inCrosshairs = null;
+            haveLetGoOfMouse = false;
+            readyToGrab = false;
         }
-        readyToGrab = false;
         inMagnesis = false;
-        heldObject = null;
-        inCrosshairs = null;
-        haveLetGoOfMouse = false;
-        GetComponent<LineRenderer>().enabled = false;
     }
 
     private void ThrowObject(Vector3 direction)
     {
         GameObject toThrow = heldObject;
         StopMagnesis();
-        toThrow.GetComponent<Rigidbody>().velocity = direction * 1.5f;
+        toThrow.GetComponent<Rigidbody>().velocity = direction * ThrowSpeed;
     }
 
     // Grapple
@@ -339,7 +373,7 @@ public class PlayerInput : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, ScarfLength))
         {
-            if (hit.collider.CompareTag("Untagged"))
+            if (hit.collider.CompareTag("Grapple"))
             {
                 grappleLocation = hit.point;
                 doGrapple = true;
@@ -352,7 +386,7 @@ public class PlayerInput : MonoBehaviour
     {
         //doGrapple = false;
         GrappleSpeed = 0.05f;
-        GetComponent<LineRenderer>().enabled = false;
+        //GetComponent<LineRenderer>().enabled = false;
         rb.mass = rbOriginalMass;
         rb.useGravity = true;
         //rb.freezeRotation = false;
@@ -368,10 +402,10 @@ public class PlayerInput : MonoBehaviour
     // Moves the player towards grappled location.
     private void GrappleMovePlayer()
     {
-        GetComponent<LineRenderer>().enabled = true; // Show "Scarf"
+        //GetComponent<LineRenderer>().enabled = true; // Show "Scarf"
         // Draw "Scarf" line
-        GetComponent<LineRenderer>().SetPosition(0, transform.position);
-        GetComponent<LineRenderer>().SetPosition(1, grappleLocation);
+        //GetComponent<LineRenderer>().SetPosition(0, transform.position);
+        //GetComponent<LineRenderer>().SetPosition(1, grappleLocation);
 
         rb.mass = 0.1f;
         rb.useGravity = false;
@@ -387,11 +421,33 @@ public class PlayerInput : MonoBehaviour
 
     public void AddMoveableObjectToList(GameObject toAdd)
     {
-        moveableObjects.Add(toAdd);
+        moveableObjects.Add(toAdd, toAdd.GetComponent<MeshRenderer>().material);
     }
 
     public void RemoveMoveableObjectFromList(GameObject toRemove)
     {
         moveableObjects.Remove(toRemove);
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if(collision.transform.name == "RockForBossProjectile")
+        {
+            Cursor.visible = true;
+            Destroy(this.gameObject);
+            PlayerHealth--;
+            if(PlayerHealth == 0)
+            {
+                Destroy(this.gameObject);
+            }
+        }
+    }
+
+    public void reduceHealth()
+    {
+        PlayerHealth = PlayerHealth - 1;
+
+        if (PlayerHealth == 0)
+            Destroy(this.gameObject);
     }
 }

@@ -5,18 +5,17 @@ using UnityEngine;
 public class SmashTrigger : MonoBehaviour
 {
     public GameObject Player;
+    public GameObject Rune;
+    public Material StandardColor;
+    public Material WeakenedColor;
     public float TimeBeforeReset;
 
     private bool weakened;
-    private Color normalST;
-    private Color weakenedST;
 
     // Start is called before the first frame update
     void Start()
     {
         weakened = false;
-        normalST = new Color(255f, 0f, 0f);
-        weakenedST = new Color(0f, 0f, 255f);
         TimeBeforeReset = 3f;
     }
 
@@ -31,7 +30,7 @@ public class SmashTrigger : MonoBehaviour
     {
         if (!weakened)
         {
-            gameObject.GetComponent<Renderer>().material.SetColor("_Color", weakenedST);
+            Rune.GetComponent<MeshRenderer>().material = WeakenedColor;
             Invoke("ResetST", TimeBeforeReset);
             collision.gameObject.GetComponent<Rigidbody>().velocity = new Vector3();
             collision.gameObject.SendMessage("SendBackToPosition", Player.transform.position, SendMessageOptions.DontRequireReceiver);
@@ -46,6 +45,6 @@ public class SmashTrigger : MonoBehaviour
     private void ResetST()
     {
         weakened = false;
-        gameObject.GetComponent<Renderer>().material.SetColor("_Color", normalST);
+        Rune.GetComponent<MeshRenderer>().material = StandardColor;
     }
 }
