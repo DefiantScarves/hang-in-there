@@ -12,6 +12,8 @@ public class PlayerInput : MonoBehaviour
     public float distanceGround;
     public float ThrowSpeed = 1.5f;
 
+    public int PlayerHealth = 3;
+
     public Material HighlightedMoveable;
     public Material SelectedMoveable;
     public LayerMask groundLayers;
@@ -80,7 +82,8 @@ public class PlayerInput : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {   
+    {
+
         movementVector = Vector3.zero;
         
         // Get movement from WASD
@@ -424,5 +427,27 @@ public class PlayerInput : MonoBehaviour
     public void RemoveMoveableObjectFromList(GameObject toRemove)
     {
         moveableObjects.Remove(toRemove);
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if(collision.transform.name == "RockForBossProjectile")
+        {
+            Cursor.visible = true;
+            Destroy(this.gameObject);
+            PlayerHealth--;
+            if(PlayerHealth == 0)
+            {
+                Destroy(this.gameObject);
+            }
+        }
+    }
+
+    public void reduceHealth()
+    {
+        PlayerHealth = PlayerHealth - 1;
+
+        if (PlayerHealth == 0)
+            Destroy(this.gameObject);
     }
 }

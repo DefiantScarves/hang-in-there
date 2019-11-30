@@ -7,6 +7,8 @@ public class BossProjectile : MonoBehaviour
     public GameObject RockExplosionPrefab;
 
     public float Speed = 0.1f;
+    public PlayerInput pI;
+
 
     private Vector3 movementVector;
     private GameObject player;
@@ -18,7 +20,7 @@ public class BossProjectile : MonoBehaviour
         player = GameObject.Find("Player");
         if (player == null)
         {
-            player = GameObject.Find("DemoPlayer");
+            player = GameObject.Find("Player");
         }
     }
 
@@ -31,13 +33,23 @@ public class BossProjectile : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        //if (collision.transform.name == "DemoPlayer")
-        //{
+        if (collision.transform.name == "Player")
+        {
+            collision.gameObject.SendMessage("reduceHealth");
             gameObject.tag = "Untagged";
             Instantiate(RockExplosionPrefab, transform.position, Quaternion.Euler(collision.contacts[0].normal));
             player.SendMessage("RemoveMoveableObjectFromList", gameObject);
             Destroy(this.gameObject);
-        //}
+        }
+        else
+        {
+            gameObject.tag = "Untagged";
+            Instantiate(RockExplosionPrefab, transform.position, Quaternion.Euler(collision.contacts[0].normal));
+            player.SendMessage("RemoveMoveableObjectFromList", gameObject);
+            Destroy(this.gameObject);
+        }
+
+
 
     }
 }
