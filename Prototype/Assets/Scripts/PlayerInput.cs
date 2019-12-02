@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerInput : MonoBehaviour
@@ -84,6 +86,11 @@ public class PlayerInput : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (transform.position.y <= 15.9f)
+        {
+            transform.position = new Vector3(-100f, 39.4f, 168f);
+            PlayerHealth--;
+        }
 
         movementVector = Vector3.zero;
         
@@ -182,7 +189,7 @@ public class PlayerInput : MonoBehaviour
 
 
         // Prevents player form jumping up a wall
-        if (!Physics.Raycast (transform.position, -Vector3.up, distanceGround + 0.1f))
+        if (!Physics.Raycast (transform.position, -Vector3.up, distanceGround + 1.0f))
         {
             isGrounded = false;
         }
@@ -453,6 +460,16 @@ public class PlayerInput : MonoBehaviour
         PlayerHealth = PlayerHealth - 1;
 
         if (PlayerHealth == 0)
+        {
+            GameObject boss = GameObject.Find("TestBoss");
+            if (boss == null)
+            {
+                boss = GameObject.Find("TestBoss");
+            }
+            boss.SendMessage("resetGame");
             Destroy(this.gameObject);
+
+        }
+
     }
 }

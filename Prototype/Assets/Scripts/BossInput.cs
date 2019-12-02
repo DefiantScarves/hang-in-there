@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BossInput : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class BossInput : MonoBehaviour
     public GameObject AttackPoint;
 
     public GameObject Projectile;
+
+    public int health = 3;
 
 
 
@@ -44,5 +47,24 @@ public class BossInput : MonoBehaviour
     private void Shoot()
     {
         Instantiate(Projectile, AttackPoint.transform.position, AttackPoint.transform.rotation);
+    }
+
+    public void reduceHealth()
+    {
+        health = health - 1;
+
+        if (health == 0)
+            Destroy(this.gameObject);
+    }
+
+    public void resetGame()
+    {
+        StartCoroutine(waiter());
+    }
+
+    IEnumerator waiter()
+    {
+        yield return new WaitForSeconds(5);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name); // loads current scene
     }
 }

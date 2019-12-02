@@ -12,15 +12,23 @@ public class BossProjectile : MonoBehaviour
 
     private Vector3 movementVector;
     private GameObject player;
+    private GameObject boss;
 
     // Start is called before the first frame update
     void Start()
     {
         movementVector = transform.forward * Speed;
+
         player = GameObject.Find("Player");
         if (player == null)
         {
             player = GameObject.Find("Player");
+        }
+
+        boss = GameObject.Find("TestBoss");
+        if (boss == null)
+        {
+            boss = GameObject.Find("TestBoss");
         }
     }
 
@@ -41,6 +49,16 @@ public class BossProjectile : MonoBehaviour
             player.SendMessage("RemoveMoveableObjectFromList", gameObject);
             Destroy(this.gameObject);
         }
+
+        else if (collision.transform.name == "TestBoss")
+        {
+            collision.gameObject.SendMessage("reduceHealth");
+            gameObject.tag = "Untagged";
+            Instantiate(RockExplosionPrefab, transform.position, Quaternion.Euler(collision.contacts[0].normal));
+            player.SendMessage("RemoveMoveableObjectFromList", gameObject);
+            Destroy(this.gameObject);
+        }
+
         else
         {
             gameObject.tag = "Untagged";
