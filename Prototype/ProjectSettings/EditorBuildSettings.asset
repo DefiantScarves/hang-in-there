@@ -8,4 +8,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/HDRPVS.unity
     guid: 5f7b329f03b349e439861564f42f0671
+  - enabled: 1
+    path: Assets/Scenes/StartMenu.unity
+    guid: 4dc4915e770671847861db4db7116c6c
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 30bb2c42ca5604047813969731ebaf74
   m_configObjects: {}
