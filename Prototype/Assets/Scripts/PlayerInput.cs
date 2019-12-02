@@ -16,6 +16,7 @@ public class PlayerInput : MonoBehaviour
 
     public Material HighlightedMoveable;
     public Material SelectedMoveable;
+    public Material SelectedGrapple;
     public LayerMask groundLayers;
     public CapsuleCollider col;
     public Image Crosshairs;
@@ -39,7 +40,7 @@ public class PlayerInput : MonoBehaviour
     private bool stowedObject;
     private GameObject inCrosshairs;
     private GameObject heldObject;
-    private Dictionary<GameObject, Material> moveableObjects;
+    private Dictionary<GameObject, Material> tkObjects;
     private HashSet<GameObject> grappleObjects;
 
     private Vector3 grappleLocation;
@@ -60,15 +61,20 @@ public class PlayerInput : MonoBehaviour
 
         // Search for all existing moveable objects and put them in a hash set
         GameObject[] foundMoveableObjects = GameObject.FindGameObjectsWithTag("Moveable");
-        moveableObjects = new Dictionary<GameObject, Material>();
+        GameObject[] foundGrappleObjects = GameObject.FindGameObjectsWithTag("Grapple");
+        tkObjects = new Dictionary<GameObject, Material>();
 
         foreach (GameObject MO in foundMoveableObjects)
         {
-            moveableObjects.Add(MO, MO.GetComponent<MeshRenderer>().material);
+            tkObjects.Add(MO, MO.GetComponent<MeshRenderer>().material);
+        }
+        foreach (GameObject GO in foundGrappleObjects)
+        {
+            tkObjects.Add(GO, GO.GetComponent<MeshRenderer>().material);
         }
 
         // Search for all existing grapple objects and put them in a hash set
-        GameObject[] foundGrappleObjects = GameObject.FindGameObjectsWithTag("Grapple");
+        //GameObject[] foundGrappleObjects = GameObject.FindGameObjectsWithTag("Grapple");
         grappleObjects = new HashSet<GameObject>(foundGrappleObjects);
 
         Crosshairs.enabled = false;
@@ -167,7 +173,7 @@ public class PlayerInput : MonoBehaviour
         // Zooms camera back out to orbit and clears any skill-specific stuff
         if (Input.GetMouseButtonUp(1))
         {
-            foreach (KeyValuePair<GameObject, Material> mgo in moveableObjects) { mgo.Key.GetComponent<MeshRenderer>().material = mgo.Value; }
+            foreach (KeyValuePair<GameObject, Material> mgo in tkObjects) { mgo.Key.GetComponent<MeshRenderer>().material = mgo.Value; }
             Camera.main.SendMessage("EndSkill");
             StopMagnesis();
             haveLetGoOfMouse = true;
@@ -230,12 +236,12 @@ public class PlayerInput : MonoBehaviour
         if (!stowedObject)
         {
             // Paint moveable objects that are visible
-            foreach (KeyValuePair<GameObject, Material> mgo in moveableObjects)
+            foreach (KeyValuePair<GameObject, Material> mgo in tkObjects)
             {
                 Ray toGo = new Ray(transform.position, mgo.Key.transform.position - transform.position);
                 if (!inMagnesis && Physics.Raycast(toGo, out RaycastHit hitInfo))
                 {
-                    if (hitInfo.collider.gameObject.tag == "Moveable")
+                    if (hitInfo.collider.gameObject.tag == "Moveable" || hitInfo.collider.gameObject.tag == "Grapple")
                     {
                         mgo.Key.GetComponent<MeshRenderer>().material = HighlightedMoveable;
                     }
@@ -254,6 +260,10 @@ public class PlayerInput : MonoBehaviour
                     inCrosshairs = aimHit.collider.gameObject;
                     aimHit.collider.GetComponent<MeshRenderer>().material = SelectedMoveable;
                     readyToGrab = true;
+                }
+                else if (aimHit.collider.gameObject.tag == "Grapple")
+                {
+                    aimHit.collider.GetComponent<MeshRenderer>().material = SelectedGrapple;
                 }
                 // If object aimed at is not moveable
                 else
@@ -421,12 +431,12 @@ public class PlayerInput : MonoBehaviour
 
     public void AddMoveableObjectToList(GameObject toAdd)
     {
-        moveableObjects.Add(toAdd, toAdd.GetComponent<MeshRenderer>().material);
+        tkObjects.Add(toAdd, toAdd.GetComponent<MeshRenderer>().material);
     }
 
     public void RemoveMoveableObjectFromList(GameObject toRemove)
     {
-        moveableObjects.Remove(toRemove);
+        tkObjects.Remove(toRemove);
     }
 
     void OnCollisionEnter(Collision collision)

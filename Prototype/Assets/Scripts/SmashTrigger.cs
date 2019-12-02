@@ -6,6 +6,7 @@ public class SmashTrigger : MonoBehaviour
 {
     public GameObject Player;
     public GameObject Rune;
+    public GameObject RockExplosionPrefab;
     public Material StandardColor;
     public Material WeakenedColor;
     public float TimeBeforeReset;
@@ -38,6 +39,7 @@ public class SmashTrigger : MonoBehaviour
         }
         else
         {
+            Instantiate(RockExplosionPrefab, transform.position, Quaternion.Euler(collision.contacts[0].normal));
             Destroy(this.gameObject);
         }
     }

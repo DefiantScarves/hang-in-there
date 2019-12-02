@@ -107,6 +107,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Player: {fileID: 0}
   Rune: {fileID: 904865792}
+  RockExplosionPrefab: {fileID: 1825254758179522586, guid: 1d46cbed69767ff4b91b45544e81cce1,
+    type: 3}
   StandardColor: {fileID: 2100000, guid: 39f3ba47c6c0b8a49806507fb6cd894f, type: 2}
   WeakenedColor: {fileID: 2100000, guid: 72f90f80131d98249bb482997c3d0121, type: 2}
   TimeBeforeReset: 0
