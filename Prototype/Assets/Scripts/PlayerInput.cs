@@ -89,7 +89,8 @@ public class PlayerInput : MonoBehaviour
         if (transform.position.y <= 15.9f)
         {
             transform.position = new Vector3(-100f, 39.4f, 168f);
-            PlayerHealth--;
+            //PlayerHealth--;
+            reduceHealth();
         }
 
         movementVector = Vector3.zero;
