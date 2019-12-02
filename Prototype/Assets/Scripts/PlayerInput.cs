@@ -41,7 +41,6 @@ public class PlayerInput : MonoBehaviour
     private GameObject inCrosshairs;
     private GameObject heldObject;
     private Dictionary<GameObject, Material> tkObjects;
-    private HashSet<GameObject> grappleObjects;
 
     private Vector3 grappleLocation;
     private bool doGrapple = false;
@@ -59,7 +58,7 @@ public class PlayerInput : MonoBehaviour
         currentSpeed = Speed;
         isAiming = false;
 
-        // Search for all existing moveable objects and put them in a hash set
+        // Search for all existing moveable and grapple objects and put them in a dictionary
         GameObject[] foundMoveableObjects = GameObject.FindGameObjectsWithTag("Moveable");
         GameObject[] foundGrappleObjects = GameObject.FindGameObjectsWithTag("Grapple");
         tkObjects = new Dictionary<GameObject, Material>();
@@ -72,10 +71,6 @@ public class PlayerInput : MonoBehaviour
         {
             tkObjects.Add(GO, GO.GetComponent<MeshRenderer>().material);
         }
-
-        // Search for all existing grapple objects and put them in a hash set
-        //GameObject[] foundGrappleObjects = GameObject.FindGameObjectsWithTag("Grapple");
-        grappleObjects = new HashSet<GameObject>(foundGrappleObjects);
 
         Crosshairs.enabled = false;
         Cursor.visible = false;
