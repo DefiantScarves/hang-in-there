@@ -49,6 +49,7 @@ public class PlayerInput : MonoBehaviour
 
     private Vector3 movementVector;
     private Vector3 currentVelocity;
+    private Vector3 spawnPosition;
 
     // Start is called before the first frame update
     void Start()
@@ -81,6 +82,7 @@ public class PlayerInput : MonoBehaviour
         haveLetGoOfMouse = true;
         GrappleSpeed = 0.05f;
         stowedObject = false;
+        spawnPosition = transform.position;
     }
 
     // Update is called once per frame
@@ -88,7 +90,8 @@ public class PlayerInput : MonoBehaviour
     {
         if (transform.position.y <= 15.9f)
         {
-            transform.position = new Vector3(-100f, 39.4f, 168f);
+            //transform.position = new Vector3(-100f, 39.4f, 168f);
+            transform.position = spawnPosition;
             //PlayerHealth--;
             reduceHealth();
         }
@@ -208,7 +211,7 @@ public class PlayerInput : MonoBehaviour
         }
 
         // Asserts whether player is against a wall during grapple or not
-        if(doGrapple && Physics.Raycast(rb.transform.position, rb.transform.forward, 1.0f))
+        if(doGrapple && Physics.Raycast(rb.transform.position, rb.transform.forward, 5.0f))
         {
             isAgainstWallDuringGrapple = true;
         }
@@ -298,6 +301,7 @@ public class PlayerInput : MonoBehaviour
         if (heldObject == null && !stowedObject)
         {
             heldObject = inCrosshairs;
+            heldObject.SendMessage("Caught");
         }
         heldObjectOffset = (transform.position - Camera.main.transform.position) + (heldObject.transform.position - transform.position);
         heldObject.GetComponent<Rigidbody>().freezeRotation = true;
@@ -404,7 +408,7 @@ public class PlayerInput : MonoBehaviour
         rb.mass = rbOriginalMass;
         rb.useGravity = true;
         //rb.freezeRotation = false;
-        if (doGrapple && isAgainstWallDuringGrapple && !jumpedGrappledAlready)
+        if (doGrapple && isAgainstWallDuringGrapple)
         {
             rb.AddForce(Vector3.up * (jumpForce * 1.2f), ForceMode.Impulse);
             jumpedGrappledAlready = true;
