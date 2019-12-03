@@ -9,7 +9,6 @@ public class BossProjectile : MonoBehaviour
     public float Speed = 0.1f;
     public PlayerInput pI;
 
-
     private Vector3 movementVector;
     private GameObject player;
     private GameObject boss;
@@ -18,7 +17,7 @@ public class BossProjectile : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        movementVector = transform.forward * Speed;
+        //movementVector = transform.forward * Speed;
 
         player = GameObject.Find("Player");
         if (player == null)
@@ -31,6 +30,8 @@ public class BossProjectile : MonoBehaviour
         {
             boss = GameObject.Find("TestBoss");
         }
+
+        movementVector = (player.transform.position - transform.position).normalized * Speed;
 
         caught = false;
     }
