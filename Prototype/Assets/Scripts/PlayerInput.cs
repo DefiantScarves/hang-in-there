@@ -228,6 +228,7 @@ public class PlayerInput : MonoBehaviour
         {
             heldObject.transform.position = Vector3.Lerp(heldObject.transform.position, StowPoint.position, 0.3f);
         }
+        
     }
 
     private void aim()

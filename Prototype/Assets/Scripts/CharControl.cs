@@ -15,8 +15,11 @@ public class CharControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float vertical = Input.GetAxis("Vertical");
-        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Mathf.Abs( Input.GetAxis("Vertical")) * 0.5f;
+
+        if (Input.GetKey(KeyCode.LeftShift)) vertical *= 2f;
+
+
         thisAnimator.SetFloat("Forwards", vertical);
         //thisAnimator.SetFloat("Backwards", -1 * vertical);
         //thisAnimator.SetFloat("Right", horizontal);
