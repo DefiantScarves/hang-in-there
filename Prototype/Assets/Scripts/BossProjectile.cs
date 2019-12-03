@@ -13,6 +13,7 @@ public class BossProjectile : MonoBehaviour
     private Vector3 movementVector;
     private GameObject player;
     private GameObject boss;
+    private bool caught;
 
     // Start is called before the first frame update
     void Start()
@@ -30,18 +31,23 @@ public class BossProjectile : MonoBehaviour
         {
             boss = GameObject.Find("TestBoss");
         }
+
+        caught = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        GetComponent<Rigidbody>().MovePosition(transform.position + movementVector);
+        if (!caught)
+        {
+            GetComponent<Rigidbody>().MovePosition(transform.position + movementVector);
+        }
     }
 
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.transform.name == "Player")
+        if (collision.transform.name == "Player" && !caught)
         {
             collision.gameObject.SendMessage("reduceHealth");
             gameObject.tag = "Untagged";
@@ -50,7 +56,7 @@ public class BossProjectile : MonoBehaviour
             Destroy(this.gameObject);
         }
 
-        else if (collision.transform.name == "TestBoss")
+        else if (collision.transform.name == "TestBoss" || collision.transform.name == "Cube")
         {
             collision.gameObject.SendMessage("reduceHealth");
             gameObject.tag = "Untagged";
@@ -59,15 +65,17 @@ public class BossProjectile : MonoBehaviour
             Destroy(this.gameObject);
         }
 
-        else
+        else if (collision.transform.name != "Player")
         {
             gameObject.tag = "Untagged";
             Instantiate(RockExplosionPrefab, transform.position, Quaternion.Euler(collision.contacts[0].normal));
             player.SendMessage("RemoveMoveableObjectFromList", gameObject);
             Destroy(this.gameObject);
         }
+    }
 
-
-
+    public void Caught()
+    {
+        caught = true;
     }
 }
