@@ -17,8 +17,6 @@ public class BossProjectile : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //movementVector = transform.forward * Speed;
-
         player = GameObject.Find("Player");
         if (player == null)
         {

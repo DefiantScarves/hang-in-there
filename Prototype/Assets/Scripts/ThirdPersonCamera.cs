@@ -8,7 +8,7 @@ public class ThirdPersonCamera : MonoBehaviour
 
     private Camera cam;
 
-    public float distanceFromPlayer = 20.0f; // Orbiting distance
+    public float distanceFromPlayer = 15.0f; // Orbiting distance
     private float distanceFromPlayerInSkill = 5.0f; // Aiming distance
     private float currentX = 0.0f; // Stores mouse input for camera
     private float currentY = 0.0f; // Stores mouse input for camera
