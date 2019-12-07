@@ -18,30 +18,31 @@ public class BossInput : MonoBehaviour
     public int health = 3;
 
 
-
     // Start is called before the first frame update
     void Start()
     {
         Player = GameObject.Find("Player");
+        canAttack = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.LookAt(Player.transform);
-
-        if (shootCooldown > 0)
+        if (canAttack)
         {
-            shootCooldown -= Time.deltaTime;
-        }
+            transform.LookAt(Player.transform);
 
-        else
-        {
-            Shoot();
-            shootCooldown = 3.0f;
-        }
+            if (shootCooldown > 0)
+            {
+                shootCooldown -= Time.deltaTime;
+            }
 
-        
+            else
+            {
+                Shoot();
+                shootCooldown = 3.0f;
+            }
+        }
     }
 
     private void Shoot()
@@ -66,5 +67,10 @@ public class BossInput : MonoBehaviour
     {
         yield return new WaitForSeconds(5);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name); // loads current scene
+    }
+
+    public void Activate()
+    {
+        canAttack = true;
     }
 }

@@ -12,12 +12,14 @@ public class SmashTrigger : MonoBehaviour
     public float TimeBeforeReset;
 
     private bool weakened;
+    private GameObject cage;
 
     // Start is called before the first frame update
     void Start()
     {
         weakened = false;
         TimeBeforeReset = 3f;
+        cage = GameObject.Find("Cage");
     }
 
     // Update is called once per frame
@@ -48,5 +50,10 @@ public class SmashTrigger : MonoBehaviour
     {
         weakened = false;
         Rune.GetComponent<MeshRenderer>().material = StandardColor;
+    }
+
+    private void OnDestroy()
+    {
+        cage.SendMessage("BreakLock");
     }
 }
